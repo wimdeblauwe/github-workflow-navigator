@@ -9,13 +9,13 @@ import sys
 version = os.environ["VERSION"]
 
 prev_result = subprocess.run(
-    ["git", "describe", "--tags", "--abbrev=0", f"v{version}^"],
+    ["git", "describe", "--tags", "--abbrev=0", f"{version}^"],
     capture_output=True,
     text=True,
 )
 prev_tag = prev_result.stdout.strip() if prev_result.returncode == 0 else ""
 
-range_spec = f"{prev_tag}..v{version}" if prev_tag else f"v{version}"
+range_spec = f"{prev_tag}..{version}" if prev_tag else f"{version}"
 log = subprocess.run(
     ["git", "log", range_spec, "--pretty=format:%s"],
     capture_output=True,
