@@ -35,7 +35,7 @@
     panel.showLoading();
     const token = await getToken();
     if (!token) {
-      panel.showError('No GitHub token configured. Click ⚙ to add one.');
+      panel.showError('No GitHub token configured. Click the gear icon to add one.');
       return;
     }
     try {
@@ -70,7 +70,10 @@
 
   function getToken() {
     return new Promise((resolve) => {
-      chrome.storage.local.get(['githubToken'], (r) => resolve(r.githubToken || null));
+      chrome.storage.local.get(['authMethod', 'githubToken', 'oauthToken'], (r) => {
+        const method = r.authMethod || 'pat';
+        resolve(method === 'oauth' ? (r.oauthToken || null) : (r.githubToken || null));
+      });
     });
   }
 
