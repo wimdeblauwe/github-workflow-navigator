@@ -21,7 +21,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -60,7 +60,6 @@ jobs:
           client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
           file-name: './github-workflow-navigator-${{ github.event.inputs.version }}.zip'
           app-id: ${{ secrets.CHROME_EXTENSION_ID }}
-          publish: true
 
       - name: Create GitHub release
         env:
