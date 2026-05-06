@@ -46,7 +46,7 @@ jobs:
             --exclude "*__MACOSX*"
 
       - name: Upload to Chrome Web Store
-        uses: Klemensas/chrome-extension-upload-action@1.4.1
+        uses: Klemensas/chrome-extension-upload-action@v1.3
         with:
           refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
           client-id: ${{ secrets.CHROME_CLIENT_ID }}
