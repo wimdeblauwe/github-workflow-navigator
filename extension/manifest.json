@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Workflow Navigator",
+  "name": "GitHub Workflow Navigator",
   "version": "0.2.0",
   "description": "Hierarchical, searchable view of GitHub Actions workflows for monorepos.",
   "permissions": ["storage"],
@@ -23,7 +23,7 @@
     "service_worker": "src/background.js"
   },
   "action": {
-    "default_title": "Workflow Navigator settings"
+    "default_title": "GitHub Workflow Navigator settings"
   },
   "options_page": "src/options.html"
 }

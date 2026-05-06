@@ -1,4 +1,4 @@
-# Workflow Navigator — Specification
+# GitHub Workflow Navigator — Specification
 
 Working specs for a tool that makes large GitHub Actions workflow lists searchable and navigable in monorepos.
 

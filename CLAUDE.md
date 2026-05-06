@@ -1,4 +1,4 @@
-# Project: Workflow Navigator
+# Project: GitHub Workflow Navigator
 
 This repo contains the specification for a tool that makes GitHub Actions
 workflow lists searchable in monorepos. See `specs/README.md` for the
