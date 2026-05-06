@@ -3,11 +3,19 @@
   "name": "GitHub Workflow Navigator",
   "version": "0.2.0",
   "description": "Hierarchical, searchable view of GitHub Actions workflows for monorepos.",
-  "permissions": ["storage"],
-  "host_permissions": ["https://api.github.com/*", "https://github.com/*"],
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "https://api.github.com/*",
+    "https://github.com/*"
+  ],
   "content_scripts": [
     {
-      "matches": ["https://github.com/*/*", "https://github.com/*/*/**"],
+      "matches": [
+        "https://github.com/*/*",
+        "https://github.com/*/*/**"
+      ],
       "js": [
         "src/parser.js",
         "src/api.js",
@@ -15,7 +23,9 @@
         "src/panel.js",
         "src/content.js"
       ],
-      "css": ["src/panel.css"],
+      "css": [
+        "src/panel.css"
+      ],
       "run_at": "document_idle"
     }
   ],
