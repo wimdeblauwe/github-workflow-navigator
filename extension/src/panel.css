@@ -61,6 +61,7 @@
   border-radius: 3px;
 }
 .wn-icon-btn:hover { background: rgba(140, 149, 159, 0.2); }
+.wn-icon-btn svg { display: block; }
 
 .wn-search {
   padding: 8px 12px;
