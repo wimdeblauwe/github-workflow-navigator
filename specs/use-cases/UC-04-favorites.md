@@ -1,5 +1,6 @@
-# UC-02: Favorite applications for quick access
+# UC-04: Favorite applications for quick access
 
+**Status:** Planned
 **Actor:** Developer
 **Goal:** Pin frequently-used applications to the top of the list.
 
@@ -18,4 +19,4 @@ Most developers regularly work on a small subset of the apps in the monorepo. Th
 
 - Favorites can be at any level of the hierarchy: a top-level app, or a specific sub-component (e.g., `billing/frontend` only).
 - A favorited app that disappears (e.g., generator stopped producing it) should not crash the UI — show it as "missing" so the user can clean it up.
-- Open question: are favorites personal (browser local storage) or team-shared (backend)? See `open-questions.md`.
+- Default to personal favorites (browser local storage) consistent with the v0.1.0 personal-PAT model. Team-shared favorites would require a backend and is out of scope for now.
