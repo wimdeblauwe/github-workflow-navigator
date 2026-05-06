@@ -150,7 +150,7 @@ function renderLeaf(leaf, owner, repo) {
   a.className = 'wn-row wn-row-leaf';
 
   const badge = document.createElement('span');
-  badge.className = `wn-type wn-type-${leaf.type}`;
+  badge.className = `wn-type wn-cat-${leaf.category} wn-type-${leaf.type}`;
   badge.textContent = leaf.type;
   a.appendChild(badge);
 

@@ -149,6 +149,7 @@
 .wn-type-release-snapshot { background: #fff8c5; color: #9a6700; }
 .wn-type-test             { background: #ddf4ff; color: #0969da; }
 .wn-type-sonar-qube       { background: #fbefff; color: #8250df; }
+.wn-cat-cd                { background: #ffe9cc; color: #bc4c00; }
 
 .wn-section {
   margin-top: 8px;
