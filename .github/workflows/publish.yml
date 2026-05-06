@@ -36,42 +36,24 @@ jobs:
 
       - name: Create and push tag
         run: |
-          git tag "v${{ github.event.inputs.version }}"
-          git push origin "v${{ github.event.inputs.version }}"
+          git tag "${{ github.event.inputs.version }}"
+          git push origin "${{ github.event.inputs.version }}"
 
       - name: Build extension zip
         run: |
-          zip -r "github-workflow-navigator-v${{ github.event.inputs.version }}.zip" extension \
+          zip -r "github-workflow-navigator-${{ github.event.inputs.version }}.zip" extension \
             --exclude "*.DS_Store" \
             --exclude "*__MACOSX*"
 
       - name: Upload to Chrome Web Store
-        env:
-          EXTENSION_ID: ${{ secrets.CHROME_EXTENSION_ID }}
-          CLIENT_ID: ${{ secrets.CHROME_CLIENT_ID }}
-          CLIENT_SECRET: ${{ secrets.CHROME_CLIENT_SECRET }}
-          REFRESH_TOKEN: ${{ secrets.CHROME_REFRESH_TOKEN }}
-        run: |
-          ACCESS_TOKEN=$(curl -sf -X POST https://oauth2.googleapis.com/token \
-            --data-urlencode "client_id=${CLIENT_ID}" \
-            --data-urlencode "client_secret=${CLIENT_SECRET}" \
-            --data-urlencode "refresh_token=${REFRESH_TOKEN}" \
-            --data-urlencode "grant_type=refresh_token" \
-            | jq -r '.access_token')
-
-          UPLOAD=$(curl -sf -X PUT \
-            "https://www.googleapis.com/upload/chromewebstore/v1.1/items/${EXTENSION_ID}" \
-            -H "Authorization: Bearer ${ACCESS_TOKEN}" \
-            -H "x-goog-api-version: 2" \
-            -T "github-workflow-navigator-v${{ github.event.inputs.version }}.zip")
-          echo "$UPLOAD"
-          [ "$(echo "$UPLOAD" | jq -r '.uploadState')" = "SUCCESS" ] || exit 1
-
-          curl -sf -X POST \
-            "https://www.googleapis.com/chromewebstore/v1.1/items/${EXTENSION_ID}/publish" \
-            -H "Authorization: Bearer ${ACCESS_TOKEN}" \
-            -H "x-goog-api-version: 2" \
-            -H "Content-Length: 0"
+        uses: Klemensas/chrome-extension-upload-action@1.4.1
+        with:
+          refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
+          client-id: ${{ secrets.CHROME_CLIENT_ID }}
+          client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
+          file-name: './github-workflow-navigator-${{ github.event.inputs.version }}.zip'
+          app-id: ${{ secrets.CHROME_EXTENSION_ID }}
+          publish: true
 
       - name: Create GitHub release
         env:
@@ -79,7 +61,7 @@ jobs:
           VERSION: ${{ github.event.inputs.version }}
         run: |
           python3 .github/scripts/generate_release_notes.py > release_notes.md
-          gh release create "v${VERSION}" \
-            --title "v${VERSION}" \
+          gh release create "${VERSION}" \
+            --title "${VERSION}" \
             --notes-file release_notes.md \
-            "github-workflow-navigator-v${VERSION}.zip"
+            "github-workflow-navigator-${VERSION}.zip"
