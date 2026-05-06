@@ -1,18 +1,37 @@
 (function () {
-  if (document.getElementById('workflow-navigator-panel')) return;
+  let currentKey = null;
+  let currentPanel = null;
 
-  const repoInfo = parseRepoFromUrl();
-  if (!repoInfo) return;
+  function handleNavigation() {
+    const repoInfo = parseRepoFromUrl();
+    const newKey = repoInfo ? `${repoInfo.owner}/${repoInfo.repo}` : null;
 
-  const panel = createPanel({
-    onRefresh: () => load(repoInfo.owner, repoInfo.repo, true),
-    onOpenSettings: () => chrome.runtime.sendMessage({ type: 'open-options' }),
-  });
-  document.body.appendChild(panel.root);
+    if (!repoInfo) {
+      teardown();
+      return;
+    }
 
-  load(repoInfo.owner, repoInfo.repo);
+    if (currentKey === newKey) return;
 
-  async function load(owner, repo, force = false) {
+    teardown();
+    currentKey = newKey;
+    currentPanel = createPanel({
+      onRefresh: () => loadInto(currentPanel, repoInfo.owner, repoInfo.repo, true),
+      onOpenSettings: () => chrome.runtime.sendMessage({ type: 'open-options' }),
+    });
+    document.body.appendChild(currentPanel.root);
+    loadInto(currentPanel, repoInfo.owner, repoInfo.repo);
+  }
+
+  function teardown() {
+    if (currentPanel) {
+      currentPanel.root.remove();
+      currentPanel = null;
+    }
+    currentKey = null;
+  }
+
+  async function loadInto(panel, owner, repo, force = false) {
     panel.showLoading();
     const token = await getToken();
     if (!token) {
@@ -54,4 +73,7 @@
       chrome.storage.local.get(['githubToken'], (r) => resolve(r.githubToken || null));
     });
   }
+
+  handleNavigation();
+  document.addEventListener('turbo:load', handleNavigation);
 })();
