@@ -116,10 +116,15 @@
 .wn-row:hover { background: rgba(140, 149, 159, 0.15); }
 
 .wn-toggle {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   width: 12px;
   color: #57606a;
-  font-size: 10px;
+  flex-shrink: 0;
+}
+.wn-toggle svg {
+  width: 12px;
+  height: 12px;
 }
 
 .wn-name { flex: 1; }
