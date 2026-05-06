@@ -16,13 +16,23 @@ This Chrome extension adds a panel to the GitHub Actions page that allows you to
 
 ## Screenshots
 
-The extension panel:
+### The extension panel
 
 ![Screenshot of the extension](screenshots/actions-panel.png)
 
-Settings:
+### Settings
+
+#### Authentication
+
+![Screenshot of the authentication settings](/screenshots/settings-auth.png)
+
+#### Parsing
 
 ![Screenshot of the parsing settings](/screenshots/settings-parsing.png)
+
+#### Visibility
+
+![Screenshot of the parsing settings](/screenshots/settings-visibility.png)
 
 ## Installation
 
