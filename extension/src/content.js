@@ -28,13 +28,11 @@
         p.id = w.id;
         return p;
       });
-      const apps = parsed.filter((p) => p.kind === 'app');
-      const helpers = parsed.filter((p) => p.kind === 'helper');
-      const unrecognized = parsed.filter((p) => p.kind === 'unrecognized');
       panel.renderTree({
         owner, repo,
-        tree: buildTree(apps),
-        helpers, unrecognized,
+        apps: parsed.filter((p) => p.kind === 'app'),
+        helpers: parsed.filter((p) => p.kind === 'helper'),
+        unrecognized: parsed.filter((p) => p.kind === 'unrecognized'),
       });
     } catch (e) {
       panel.showError(`Failed to load workflows: ${e.message}`);
