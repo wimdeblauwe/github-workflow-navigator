@@ -16,7 +16,7 @@ function createPanel({ onRefresh, onOpenSettings }) {
       <div class="wn-title">Workflows</div>
       <button class="wn-icon-btn" data-act="refresh" title="Refresh">↻</button>
       <button class="wn-icon-btn" data-act="settings" title="Settings">⚙</button>
-      <button class="wn-icon-btn" data-act="collapse" title="Collapse">×</button>
+      <button class="wn-icon-btn" data-act="collapse" title="Minimize">⊟</button>
     </div>
     <div class="wn-search">
       <input type="search" placeholder="Search workflows…" autocomplete="off" spellcheck="false" />
@@ -36,8 +36,11 @@ function createPanel({ onRefresh, onOpenSettings }) {
 
   root.querySelector('[data-act="refresh"]').addEventListener('click', () => onRefresh && onRefresh());
   root.querySelector('[data-act="settings"]').addEventListener('click', () => onOpenSettings && onOpenSettings());
-  root.querySelector('[data-act="collapse"]').addEventListener('click', () => {
-    root.classList.toggle('wn-collapsed');
+  const collapseBtn = root.querySelector('[data-act="collapse"]');
+  collapseBtn.addEventListener('click', () => {
+    const collapsed = root.classList.toggle('wn-collapsed');
+    collapseBtn.textContent = collapsed ? '⊞' : '⊟';
+    collapseBtn.title = collapsed ? 'Restore' : 'Minimize';
   });
   helperToggle.addEventListener('change', () => {
     showHelpers = helperToggle.checked;
