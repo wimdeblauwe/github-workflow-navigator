@@ -160,7 +160,7 @@
   }
   .patterns-header .col-suffix { width: 160px; flex-shrink: 0; }
   .patterns-header .col-label  { flex: 1; }
-  .patterns-header .col-color  { width: 116px; flex-shrink: 0; }
+  .patterns-header .col-color  { width: 144px; flex-shrink: 0; }
   .pattern-row {
     display: flex;
     align-items: center;
@@ -171,12 +171,14 @@
   .pattern-row .col-suffix { width: 160px; flex-shrink: 0; }
   .pattern-row .col-label  { flex: 1; min-width: 60px; }
   .col-actions { display: flex; gap: 3px; flex-shrink: 0; }
-  button.icon-btn { padding: 4px 8px; }
-  .color-picker { display: flex; gap: 3px; align-items: center; width: 116px; flex-shrink: 0; flex-wrap: wrap; }
+  button.icon-btn { padding: 4px 8px; line-height: 0; }
+  button.icon-btn svg { display: block; }
+  button.icon-label-btn { display: inline-flex; align-items: center; gap: 5px; }
+  .color-picker { display: flex; gap: 3px; align-items: center; width: 144px; flex-shrink: 0; flex-wrap: wrap; }
   .color-swatch {
     display: inline-block;
-    width: 14px;
-    height: 14px;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
     cursor: pointer;
     border: 2px solid transparent;
@@ -266,6 +268,14 @@
     color: #57606a;
     line-height: 1.5;
   }
+  .dirty-indicator {
+    display: none;
+    font-size: 12px;
+    color: #bf8700;
+    align-self: center;
+  }
+  .dirty-indicator.visible { display: inline; }
+
   textarea#panel-repo-list {
     width: 100%;
     padding: 8px;
@@ -280,6 +290,8 @@
 </head>
 <body>
   <h1>GitHub Workflow Navigator</h1>
+
+  <h2>Authentication</h2>
 
   <fieldset class="auth-methods">
     <legend>Authentication method</legend>
@@ -300,6 +312,7 @@
     <div class="row" style="margin-top:10px">
       <button id="pat-save">Save</button>
       <span class="status-inline" id="pat-status"></span>
+      <span class="dirty-indicator" id="pat-dirty">Unsaved changes</span>
     </div>
     <div class="help">
       <p>Required scopes:</p>
@@ -319,6 +332,7 @@
       <input id="client-id" type="text" class="mono" placeholder="Ov23li…" autocomplete="off" />
       <button id="client-id-save">Save</button>
       <span class="status-inline" id="client-id-status"></span>
+      <span class="dirty-indicator" id="client-id-dirty">Unsaved changes</span>
     </div>
 
     <div id="oauth-connected" style="display:none">
@@ -398,6 +412,7 @@
       <input id="separator" type="text" class="mono" style="max-width:80px" placeholder="_" autocomplete="off" />
       <button id="separator-save">Save</button>
       <span class="status-inline" id="separator-status"></span>
+      <span class="dirty-indicator" id="separator-dirty">Unsaved changes</span>
     </div>
 
     <div style="margin-top:20px">
@@ -410,15 +425,15 @@
       </div>
       <div id="patterns-list"></div>
       <div class="row" style="margin-top:8px">
-        <button class="secondary" id="add-pattern">+ Add pattern</button>
+        <button class="secondary icon-label-btn" id="add-pattern"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor"><path d="M7.75 2a.75.75 0 0 1 .75.75V7h4.25a.75.75 0 0 1 0 1.5H8.5v4.25a.75.75 0 0 1-1.5 0V8.5H2.75a.75.75 0 0 1 0-1.5H7V2.75A.75.75 0 0 1 7.75 2Z"/></svg> Add pattern</button>
         <button class="secondary" id="reset-patterns">Reset to defaults</button>
       </div>
       <div class="row" style="margin-top:12px">
-        <button id="patterns-save">Save patterns</button>
+        <button id="patterns-save">Save</button>
         <span class="status-inline" id="patterns-status"></span>
+        <span class="dirty-indicator" id="patterns-dirty">Unsaved changes</span>
       </div>
     </div>
-    <p class="field-hint" style="margin-top:12px">Changes take effect after reloading the GitHub page.</p>
   </div>
 
   <hr class="section-divider" />
@@ -458,6 +473,7 @@
       <div class="row">
         <input id="panel-min-count" type="number" min="0" step="1"
                style="max-width:80px;flex:none" />
+        <span style="font-size:13px;align-self:center;color:#57606a">workflows</span>
       </div>
     </div>
 
@@ -498,11 +514,15 @@
     </div>
 
     <div class="row">
-      <button id="visibility-save">Save visibility settings</button>
+      <button id="visibility-save">Save</button>
       <span class="status-inline" id="visibility-status"></span>
+      <span class="dirty-indicator" id="visibility-dirty">Unsaved changes</span>
     </div>
-    <p class="field-hint" style="margin-top:12px">Changes take effect after reloading the GitHub page.</p>
   </div>
+
+  <p class="field-hint" style="margin-top:24px;padding-top:16px;border-top:1px solid #d0d7de">
+    Changes to Parsing and Visibility settings take effect after reloading the GitHub page.
+  </p>
 
   <script src="options.js"></script>
 </body>
