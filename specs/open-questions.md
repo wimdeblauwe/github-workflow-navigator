@@ -19,11 +19,11 @@ Rejected alternatives:
 
 A GitHub App remains the likely path if/when the tool grows to a shared service.
 
+### Caching — TTL-based, 24-hour expiry, manual refresh button
+
+Workflow definitions only change when the generator runs. Cache responses in `chrome.storage.local` keyed by `owner/repo`, expire after 24 hours. The existing **↻ Refresh** button in the panel header forces a fresh fetch and updates the cache. See UC-05.
+
 ## Open
-
-### Caching workflow definitions
-
-Workflow definitions only change when the generator runs, so refetching on every page load is wasteful — but acceptable for v1 (one API call per repo visit, well within rate limits at this scale). Worth revisiting if users hit rate limits or notice latency.
 
 ### GitHub Enterprise Server support
 
