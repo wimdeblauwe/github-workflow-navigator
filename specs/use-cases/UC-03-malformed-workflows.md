@@ -1,5 +1,6 @@
-# UC-07: Surface malformed workflows
+# UC-03: Surface malformed workflows
 
+**Status:** Implemented (v0.1.0)
 **Actor:** Platform team / generator maintainers
 **Goal:** Know when a workflow doesn't match the expected naming convention.
 
@@ -10,8 +11,8 @@ The tool relies on the convention; when something doesn't match, it usually indi
 ## Steps
 
 1. Tool parses all workflows in the repo.
-2. Anything that doesn't match the helper rule or the `<path>_ci-<type>.yml` rule is collected.
-3. An "Unmatched" section in the UI (collapsed by default) shows them with the actual filename.
+2. Anything that doesn't match a rule in `conventions.md` (helper, CI, or CD) is collected.
+3. An "Unrecognized" section in the UI shows them with the actual filename.
 4. Optional: link to file an issue or to the generator config.
 
 ## Notes

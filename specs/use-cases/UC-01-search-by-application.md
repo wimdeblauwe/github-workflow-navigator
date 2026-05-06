@@ -1,5 +1,6 @@
 # UC-01: Search workflows by application
 
+**Status:** Implemented (v0.1.0)
 **Actor:** Developer
 **Goal:** Quickly find the workflows belonging to a specific application.
 

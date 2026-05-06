@@ -1,5 +1,6 @@
-# UC-04: Browse the application hierarchy
+# UC-02: Browse the application hierarchy
 
+**Status:** Implemented (v0.1.0)
 **Actor:** Developer
 **Goal:** Navigate a multi-level app tree (e.g., `billing/frontend`, `billing/backend`) without losing context.
 
