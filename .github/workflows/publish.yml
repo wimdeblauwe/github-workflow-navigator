@@ -1,4 +1,5 @@
 name: Publish to Chrome Web Store
+run-name: Publish ${{ github.event.inputs.version }} to Chrome Web Store
 
 on:
   workflow_dispatch:
