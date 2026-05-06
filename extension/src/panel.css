@@ -151,11 +151,13 @@
   color: #0969da;
   flex-shrink: 0;
 }
-.wn-type-release          { background: #dafbe1; color: #1a7f37; }
-.wn-type-release-snapshot { background: #fff8c5; color: #9a6700; }
-.wn-type-test             { background: #ddf4ff; color: #0969da; }
-.wn-type-sonar-qube       { background: #fbefff; color: #8250df; }
-.wn-cat-cd                { background: #ffe9cc; color: #bc4c00; }
+.wn-color-blue   { background: #ddf4ff; color: #0969da; }
+.wn-color-green  { background: #dafbe1; color: #1a7f37; }
+.wn-color-yellow { background: #fff8c5; color: #9a6700; }
+.wn-color-purple { background: #fbefff; color: #8250df; }
+.wn-color-orange { background: #ffe9cc; color: #bc4c00; }
+.wn-color-red    { background: #ffebe9; color: #cf222e; }
+.wn-color-gray   { background: #eaeef2; color: #57606a; }
 
 .wn-section {
   margin-top: 8px;

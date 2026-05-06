@@ -204,6 +204,163 @@ async function fetchGitHubUser(token) {
   return { login: data.login, avatarUrl: data.avatar_url };
 }
 
+// ── Parsing section ───────────────────────────────────────────────────────────
+
+const OPT_DEFAULT_SEPARATOR = '_';
+const OPT_DEFAULT_PATTERNS = [
+  { suffix: '_ci-release',          label: 'release',          color: 'green'  },
+  { suffix: '_ci-release-snapshot', label: 'release-snapshot', color: 'yellow' },
+  { suffix: '_ci-test',             label: 'test',             color: 'blue'   },
+  { suffix: '_ci-sonar-qube',       label: 'sonar-qube',       color: 'purple' },
+  { suffix: '_cd',                  label: 'cd',               color: 'orange' },
+];
+
+const COLOR_OPTIONS = [
+  { id: 'blue',   bg: '#ddf4ff' },
+  { id: 'green',  bg: '#dafbe1' },
+  { id: 'yellow', bg: '#fff8c5' },
+  { id: 'purple', bg: '#fbefff' },
+  { id: 'orange', bg: '#ffe9cc' },
+  { id: 'red',    bg: '#ffebe9' },
+  { id: 'gray',   bg: '#eaeef2' },
+];
+
+const separatorInput   = document.getElementById('separator');
+const separatorSaveBtn = document.getElementById('separator-save');
+const separatorStatus  = document.getElementById('separator-status');
+const patternsListEl   = document.getElementById('patterns-list');
+const addPatternBtn    = document.getElementById('add-pattern');
+const resetPatternsBtn = document.getElementById('reset-patterns');
+const patternsSaveBtn  = document.getElementById('patterns-save');
+const patternsStatus   = document.getElementById('patterns-status');
+
+let patterns = [];
+
+chrome.storage.local.get(['separator', 'patterns'], (r) => {
+  separatorInput.value = r.separator !== undefined ? r.separator : OPT_DEFAULT_SEPARATOR;
+  patterns = r.patterns !== undefined
+    ? r.patterns.map((p) => ({ ...p }))
+    : OPT_DEFAULT_PATTERNS.map((p) => ({ ...p }));
+  renderPatternsList();
+});
+
+separatorSaveBtn.addEventListener('click', () => {
+  chrome.storage.local.set({ separator: separatorInput.value }, () => {
+    flash(separatorStatus, 'Saved.', false);
+  });
+});
+
+addPatternBtn.addEventListener('click', () => {
+  collectPatterns();
+  patterns.push({ suffix: '', label: '' });
+  renderPatternsList();
+  const rows = patternsListEl.querySelectorAll('.pattern-row');
+  rows[rows.length - 1]?.querySelector('input')?.focus();
+});
+
+resetPatternsBtn.addEventListener('click', () => {
+  patterns = OPT_DEFAULT_PATTERNS.map((p) => ({ ...p }));
+  renderPatternsList();
+});
+
+patternsSaveBtn.addEventListener('click', () => {
+  collectPatterns();
+  chrome.storage.local.set({ patterns }, () => {
+    flash(patternsStatus, 'Saved.', false);
+  });
+});
+
+function collectPatterns() {
+  patterns = [];
+  patternsListEl.querySelectorAll('.pattern-row').forEach((row) => {
+    const suffix = row.querySelector('.pattern-input-suffix').value;
+    const label  = row.querySelector('.pattern-input-label').value;
+    const color  = row.querySelector('.color-swatch.selected')?.dataset.color || 'blue';
+    if (suffix || label) patterns.push({ suffix, label, color });
+  });
+}
+
+function createColorPicker(selectedColor) {
+  const picker = document.createElement('div');
+  picker.className = 'color-picker';
+  COLOR_OPTIONS.forEach(({ id, bg }) => {
+    const swatch = document.createElement('span');
+    swatch.className = 'color-swatch' + (id === (selectedColor || 'blue') ? ' selected' : '');
+    swatch.dataset.color = id;
+    swatch.style.background = bg;
+    swatch.title = id;
+    swatch.addEventListener('click', () => {
+      picker.querySelectorAll('.color-swatch').forEach((s) => s.classList.remove('selected'));
+      swatch.classList.add('selected');
+    });
+    picker.appendChild(swatch);
+  });
+  return picker;
+}
+
+function renderPatternsList() {
+  patternsListEl.innerHTML = '';
+  patterns.forEach((p, i) => patternsListEl.appendChild(createPatternRow(p, i)));
+}
+
+function createPatternRow(p, i) {
+  const row = document.createElement('div');
+  row.className = 'pattern-row';
+
+  const suffixInput = document.createElement('input');
+  suffixInput.type = 'text';
+  suffixInput.className = 'mono pattern-input-suffix col-suffix';
+  suffixInput.placeholder = '_ci-test';
+  suffixInput.value = p.suffix;
+
+  const labelInput = document.createElement('input');
+  labelInput.type = 'text';
+  labelInput.className = 'pattern-input-label col-label';
+  labelInput.placeholder = 'test';
+  labelInput.value = p.label;
+
+  const colorPicker = createColorPicker(p.color);
+
+  const actions = document.createElement('div');
+  actions.className = 'col-actions';
+
+  const upBtn = document.createElement('button');
+  upBtn.className = 'secondary icon-btn';
+  upBtn.textContent = '↑';
+  upBtn.title = 'Move up';
+  upBtn.disabled = i === 0;
+  upBtn.addEventListener('click', () => {
+    collectPatterns();
+    [patterns[i - 1], patterns[i]] = [patterns[i], patterns[i - 1]];
+    renderPatternsList();
+  });
+
+  const downBtn = document.createElement('button');
+  downBtn.className = 'secondary icon-btn';
+  downBtn.textContent = '↓';
+  downBtn.title = 'Move down';
+  downBtn.disabled = i === patterns.length - 1;
+  downBtn.addEventListener('click', () => {
+    collectPatterns();
+    [patterns[i], patterns[i + 1]] = [patterns[i + 1], patterns[i]];
+    renderPatternsList();
+  });
+
+  const removeBtn = document.createElement('button');
+  removeBtn.className = 'secondary icon-btn';
+  removeBtn.textContent = '×';
+  removeBtn.title = 'Remove';
+  removeBtn.addEventListener('click', () => {
+    collectPatterns();
+    patterns.splice(i, 1);
+    renderPatternsList();
+  });
+
+  actions.append(upBtn, downBtn, removeBtn);
+  row.append(suffixInput, labelInput, colorPicker, actions);
+  return row;
+}
+
 // ── Utilities ─────────────────────────────────────────────────────────────────
 
 function flash(el, msg, isBtn = false) {

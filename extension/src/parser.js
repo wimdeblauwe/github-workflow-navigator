@@ -1,46 +1,51 @@
 // Workflow filename parsing per specs/conventions.md.
-// Exposes parseFilename, buildTree, countLeaves on the content-script global scope.
+// Exposes parseFilename, buildTree, countLeaves, DEFAULT_SEPARATOR, DEFAULT_PATTERNS.
 
-const CI_VARIANTS = [
-  { suffix: '_ci-release-snapshot', type: 'release-snapshot' },
-  { suffix: '_ci-sonar-qube',       type: 'sonar-qube' },
-  { suffix: '_ci-release',          type: 'release' },
-  { suffix: '_ci-test',             type: 'test' },
+const DEFAULT_SEPARATOR = '_';
+
+const DEFAULT_PATTERNS = [
+  { suffix: '_ci-release',          label: 'release',          color: 'green'  },
+  { suffix: '_ci-release-snapshot', label: 'release-snapshot', color: 'yellow' },
+  { suffix: '_ci-test',             label: 'test',             color: 'blue'   },
+  { suffix: '_ci-sonar-qube',       label: 'sonar-qube',       color: 'purple' },
+  { suffix: '_cd',                  label: 'cd',               color: 'orange' },
 ];
 
-const CD_REGEX = /^(.+)_cd(-[\w-]+)?$/;
+function parseFilename(filename, config) {
+  const sep      = (config && config.separator !== undefined) ? config.separator : DEFAULT_SEPARATOR;
+  const patterns = (config && config.patterns  !== undefined) ? config.patterns  : DEFAULT_PATTERNS;
 
-const CI_TYPE_ORDER = {
-  release: 0,
-  'release-snapshot': 1,
-  test: 2,
-  'sonar-qube': 3,
-};
-
-function parseFilename(filename) {
   const m = filename.match(/^(.*)\.(ya?ml)$/);
   if (!m) return { kind: 'unrecognized', filename };
   const base = m[1];
 
-  if (base.startsWith('_')) {
-    return { kind: 'helper', filename };
-  }
+  if (base.startsWith('_')) return { kind: 'helper', filename };
 
-  for (const { suffix, type } of CI_VARIANTS) {
+  if (patterns.length === 0) return { kind: 'raw', filename };
+
+  for (let i = 0; i < patterns.length; i++) {
+    const { suffix, label } = patterns[i];
+    if (!suffix) continue;
+
+    let appPart, variant;
+
     if (base.endsWith(suffix)) {
-      const appPart = base.slice(0, -suffix.length);
-      const segments = appPart.split('_').filter(Boolean);
-      if (segments.length === 0) return { kind: 'unrecognized', filename };
-      return { kind: 'app', filename, segments, category: 'ci', type };
+      appPart = base.slice(0, -suffix.length);
+      variant = '';
+    } else {
+      // Prefix match: suffix followed by a '-variant' (e.g. '_ci' matches '_ci-test').
+      const idx = base.lastIndexOf(suffix);
+      if (idx > 0 && base[idx + suffix.length] === '-') {
+        appPart = base.slice(0, idx);
+        variant = base.slice(idx + suffix.length);
+      } else {
+        continue;
+      }
     }
-  }
 
-  const cd = base.match(CD_REGEX);
-  if (cd) {
-    const segments = cd[1].split('_').filter(Boolean);
-    if (segments.length > 0) {
-      return { kind: 'app', filename, segments, category: 'cd', type: 'cd' + (cd[2] || '') };
-    }
+    const segments = sep ? appPart.split(sep).filter(Boolean) : [appPart];
+    if (segments.length === 0) return { kind: 'unrecognized', filename };
+    return { kind: 'app', filename, segments, type: label, color: patterns[i].color || 'blue', patternIndex: i };
   }
 
   return { kind: 'unrecognized', filename };
@@ -68,14 +73,7 @@ function sortTree(node) {
 }
 
 function compareLeaves(a, b) {
-  const catRank = { ci: 0, cd: 1 };
-  const ra = catRank[a.category] ?? 2;
-  const rb = catRank[b.category] ?? 2;
-  if (ra !== rb) return ra - rb;
-  if (a.category === 'ci') {
-    return (CI_TYPE_ORDER[a.type] ?? 99) - (CI_TYPE_ORDER[b.type] ?? 99);
-  }
-  return a.type.localeCompare(b.type);
+  return (a.patternIndex ?? 999) - (b.patternIndex ?? 999);
 }
 
 function countLeaves(node) {

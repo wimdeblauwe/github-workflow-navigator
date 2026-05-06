@@ -95,6 +95,22 @@ function createPanel({ onRefresh, onOpenSettings }) {
     body.innerHTML = '';
     const { owner, repo } = data;
 
+    const raw = data.raw || [];
+
+    // No-patterns mode: show everything as a plain flat list.
+    if (raw.length > 0) {
+      const visibleRaw = query ? raw.filter((w) => itemMatches(w, query)) : raw;
+      const helpers = query ? data.helpers.filter((w) => itemMatches(w, query)) : data.helpers;
+      const showHelpersSection = showHelpers && helpers.length > 0;
+      if (visibleRaw.length === 0 && !showHelpersSection) {
+        showEmpty(query ? `No workflows match “${query}”.` : 'No workflows found.');
+        return;
+      }
+      if (visibleRaw.length > 0) body.appendChild(renderFlatSection(null, visibleRaw, owner, repo));
+      if (showHelpersSection) body.appendChild(renderFlatSection(`Helpers (${helpers.length})`, helpers, owner, repo));
+      return;
+    }
+
     const apps = query ? data.apps.filter((w) => itemMatches(w, query)) : data.apps;
     const helpers = query ? data.helpers.filter((w) => itemMatches(w, query)) : data.helpers;
     const unrecognized = query ? data.unrecognized.filter((w) => itemMatches(w, query)) : data.unrecognized;
@@ -186,7 +202,7 @@ function renderLeaf(leaf, owner, repo) {
   a.className = 'wn-row wn-row-leaf';
 
   const badge = document.createElement('span');
-  badge.className = `wn-type wn-cat-${leaf.category} wn-type-${leaf.type}`;
+  badge.className = `wn-type wn-color-${leaf.color || 'blue'}`;
   badge.textContent = leaf.type;
   a.appendChild(badge);
 
@@ -203,12 +219,13 @@ function renderLeaf(leaf, owner, repo) {
 
 function renderFlatSection(title, items, owner, repo) {
   const wrap = document.createElement('div');
-  wrap.className = 'wn-section';
-
-  const h = document.createElement('div');
-  h.className = 'wn-section-title';
-  h.textContent = title;
-  wrap.appendChild(h);
+  if (title) {
+    wrap.className = 'wn-section';
+    const h = document.createElement('div');
+    h.className = 'wn-section-title';
+    h.textContent = title;
+    wrap.appendChild(h);
+  }
 
   const ul = document.createElement('ul');
   ul.className = 'wn-tree';

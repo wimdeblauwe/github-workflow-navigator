@@ -134,6 +134,57 @@
     border: 1px solid #d0d7de;
     border-radius: 4px;
   }
+  .field-hint {
+    margin: 2px 0 8px;
+    font-size: 13px;
+    color: #57606a;
+    line-height: 1.5;
+  }
+  .section-divider {
+    border: none;
+    border-top: 1px solid #d0d7de;
+    margin: 24px 0;
+  }
+  .patterns-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #57606a;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 4px 0;
+    border-bottom: 1px solid #d0d7de;
+    margin-bottom: 4px;
+  }
+  .patterns-header .col-suffix { width: 160px; flex-shrink: 0; }
+  .patterns-header .col-label  { flex: 1; }
+  .patterns-header .col-color  { width: 116px; flex-shrink: 0; }
+  .pattern-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
+  }
+  .pattern-row input[type="text"] { width: auto; }
+  .pattern-row .col-suffix { width: 160px; flex-shrink: 0; }
+  .pattern-row .col-label  { flex: 1; min-width: 60px; }
+  .col-actions { display: flex; gap: 3px; flex-shrink: 0; }
+  button.icon-btn { padding: 4px 8px; }
+  .color-picker { display: flex; gap: 3px; align-items: center; width: 116px; flex-shrink: 0; flex-wrap: wrap; }
+  .color-swatch {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    box-sizing: border-box;
+    flex-shrink: 0;
+  }
+  .color-swatch:hover { opacity: 0.75; }
+  .color-swatch.selected { border-color: #1f2328; }
   details {
     margin-top: 16px;
     border: 1px solid #d0d7de;
@@ -282,6 +333,41 @@
         </div>
       </details>
     </div>
+  </div>
+
+  <hr class="section-divider" />
+
+  <!-- Parsing section -->
+  <div id="parsing-section">
+    <h2>Parsing</h2>
+
+    <label class="field-label" for="separator">Separator</label>
+    <p class="field-hint">Character(s) that split the app path in filenames into tree folders (e.g. <code>myapp_service</code> with separator <code>_</code> → <code>myapp / service</code>).</p>
+    <div class="row">
+      <input id="separator" type="text" class="mono" style="max-width:80px" placeholder="_" autocomplete="off" />
+      <button id="separator-save">Save</button>
+      <span class="status-inline" id="separator-status"></span>
+    </div>
+
+    <div style="margin-top:20px">
+      <label class="field-label">Workflow patterns</label>
+      <p class="field-hint">Filename suffixes that identify a workflow type, in sort order. Leave empty to show all workflows as a plain list without categorisation.</p>
+      <div class="patterns-header">
+        <span class="col-suffix">Suffix</span>
+        <span class="col-label">Badge label</span>
+        <span class="col-color">Color</span>
+      </div>
+      <div id="patterns-list"></div>
+      <div class="row" style="margin-top:8px">
+        <button class="secondary" id="add-pattern">+ Add pattern</button>
+        <button class="secondary" id="reset-patterns">Reset to defaults</button>
+      </div>
+      <div class="row" style="margin-top:12px">
+        <button id="patterns-save">Save patterns</button>
+        <span class="status-inline" id="patterns-status"></span>
+      </div>
+    </div>
+    <p class="field-hint" style="margin-top:12px">Changes take effect after reloading the GitHub page.</p>
   </div>
 
   <script src="options.js"></script>

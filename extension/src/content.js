@@ -44,8 +44,9 @@
         workflows = await fetchAllWorkflows(owner, repo, token);
         await setCachedWorkflows(owner, repo, workflows);
       }
+      const config = await getConfig();
       const parsed = workflows.map((w) => {
-        const p = parseFilename(filenameFromPath(w.path));
+        const p = parseFilename(filenameFromPath(w.path), config);
         p.githubName = w.name;
         p.state = w.state;
         p.id = w.id;
@@ -53,9 +54,10 @@
       });
       panel.renderTree({
         owner, repo,
-        apps: parsed.filter((p) => p.kind === 'app'),
-        helpers: parsed.filter((p) => p.kind === 'helper'),
+        apps:         parsed.filter((p) => p.kind === 'app'),
+        helpers:      parsed.filter((p) => p.kind === 'helper'),
         unrecognized: parsed.filter((p) => p.kind === 'unrecognized'),
+        raw:          parsed.filter((p) => p.kind === 'raw'),
       });
     } catch (e) {
       panel.showError(`Failed to load workflows: ${e.message}`);
@@ -73,6 +75,17 @@
       chrome.storage.local.get(['authMethod', 'githubToken', 'oauthToken'], (r) => {
         const method = r.authMethod || 'pat';
         resolve(method === 'oauth' ? (r.oauthToken || null) : (r.githubToken || null));
+      });
+    });
+  }
+
+  function getConfig() {
+    return new Promise((resolve) => {
+      chrome.storage.local.get(['separator', 'patterns'], (r) => {
+        resolve({
+          separator: r.separator !== undefined ? r.separator : DEFAULT_SEPARATOR,
+          patterns:  r.patterns  !== undefined ? r.patterns  : DEFAULT_PATTERNS,
+        });
       });
     });
   }
