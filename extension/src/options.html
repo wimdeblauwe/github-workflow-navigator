@@ -10,56 +10,272 @@
     max-width: 600px;
     color: #1f2328;
   }
-  h1 { font-size: 18px; margin: 0 0 16px; }
-  label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 13px; }
-  input[type="password"] {
+  h1 { font-size: 18px; margin: 0 0 20px; }
+  h2 { font-size: 14px; margin: 0 0 12px; font-weight: 600; }
+
+  .auth-methods {
+    border: 1px solid #d0d7de;
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin: 0 0 20px;
+  }
+  .auth-methods legend {
+    font-size: 13px;
+    font-weight: 600;
+    padding: 0 4px;
+  }
+  .auth-methods label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    padding: 4px 0;
+  }
+
+  .auth-section { display: none; }
+  .auth-section.active { display: block; }
+
+  label.field-label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    font-size: 13px;
+  }
+  input[type="password"], input[type="text"] {
     width: 100%;
     padding: 8px;
     border: 1px solid #d0d7de;
     border-radius: 6px;
-    font-family: ui-monospace, SFMono-Regular, monospace;
     font-size: 13px;
     box-sizing: border-box;
   }
+  input[type="text"].mono {
+    font-family: ui-monospace, SFMono-Regular, monospace;
+  }
+  .row {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    margin-top: 8px;
+  }
+  .row input { flex: 1; margin-top: 0; }
   button {
-    margin-top: 12px;
-    padding: 6px 16px;
+    padding: 6px 14px;
     cursor: pointer;
     background: #1f883d;
     color: white;
     border: 1px solid rgba(31, 35, 40, 0.15);
     border-radius: 6px;
     font-weight: 500;
+    font-size: 13px;
+    white-space: nowrap;
   }
   button:hover { background: #1a7f37; }
-  .status { margin-left: 12px; color: #1a7f37; font-size: 13px; }
+  button:disabled { opacity: 0.6; cursor: not-allowed; }
+  button.secondary {
+    background: #f6f8fa;
+    color: #1f2328;
+    border-color: #d0d7de;
+  }
+  button.secondary:hover { background: #eaeef2; }
+
+  .status-inline { margin-left: 8px; font-size: 13px; color: #1a7f37; }
+  .status-inline.error { color: #cf222e; }
+
+  .oauth-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 16px 0 12px;
+    font-size: 13px;
+  }
+  .oauth-status .avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 1px solid #d0d7de;
+  }
+  .connected-label { font-weight: 600; }
+
   .help {
-    margin-top: 24px;
+    margin-top: 20px;
     color: #57606a;
     font-size: 13px;
-    line-height: 1.5;
+    line-height: 1.6;
+    border-top: 1px solid #d0d7de;
+    padding-top: 16px;
   }
+  .help p { margin: 0 0 8px; }
+  .help ul { margin: 4px 0 8px; padding-left: 20px; }
   .help a { color: #0969da; }
-  code { background: #f6f8fa; padding: 1px 4px; border-radius: 3px; font-size: 12px; }
+  code {
+    background: #f6f8fa;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-family: ui-monospace, SFMono-Regular, monospace;
+  }
+  .redirect-url-box {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .redirect-url-box code {
+    flex: 1;
+    padding: 6px 8px;
+    font-size: 12px;
+    border: 1px solid #d0d7de;
+    border-radius: 4px;
+    user-select: all;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  details {
+    margin-top: 16px;
+    border: 1px solid #d0d7de;
+    border-radius: 6px;
+  }
+  details summary {
+    padding: 8px 12px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  details summary .chevron {
+    display: inline-flex;
+    align-items: center;
+    color: #57606a;
+    transition: transform 0.15s;
+    flex-shrink: 0;
+  }
+  details[open] summary .chevron { transform: rotate(90deg); }
+  details .details-body {
+    padding: 12px 16px 16px;
+    border-top: 1px solid #d0d7de;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #57606a;
+  }
+  details .details-body ol { margin: 8px 0; padding-left: 20px; }
+  details .details-body li { margin-bottom: 6px; }
+  details .details-body table { border-collapse: collapse; width: 100%; margin: 8px 0; }
+  details .details-body th, details .details-body td {
+    text-align: left;
+    padding: 5px 8px;
+    border: 1px solid #d0d7de;
+    font-size: 12px;
+  }
+  details .details-body th { background: #f6f8fa; font-weight: 600; }
 </style>
 </head>
 <body>
   <h1>Workflow Navigator</h1>
-  <label for="token">GitHub Personal Access Token</label>
-  <input id="token" type="password" placeholder="ghp_… or github_pat_…" autocomplete="off" />
-  <div>
-    <button id="save">Save</button>
-    <span class="status" id="status"></span>
+
+  <fieldset class="auth-methods">
+    <legend>Authentication method</legend>
+    <label>
+      <input type="radio" name="authMethod" value="pat" />
+      Personal Access Token <em style="font-weight:400;color:#57606a">(default)</em>
+    </label>
+    <label>
+      <input type="radio" name="authMethod" value="oauth" />
+      GitHub OAuth
+    </label>
+  </fieldset>
+
+  <!-- PAT section -->
+  <div id="pat-section" class="auth-section">
+    <label class="field-label" for="token">Personal Access Token</label>
+    <input id="token" type="password" placeholder="ghp_… or github_pat_…" autocomplete="off" />
+    <div class="row" style="margin-top:10px">
+      <button id="pat-save">Save</button>
+      <span class="status-inline" id="pat-status"></span>
+    </div>
+    <div class="help">
+      <p>Required scopes:</p>
+      <ul>
+        <li><strong>Classic token:</strong> <code>repo</code> (private repos) or <code>public_repo</code> (public only).</li>
+        <li><strong>Fine-grained token:</strong> <code>Actions: Read</code> on the target repos.</li>
+      </ul>
+      <p>Create one at <a href="https://github.com/settings/tokens" target="_blank" rel="noopener">github.com/settings/tokens</a>. If your org uses SAML SSO, authorise the token for the org after creating it.</p>
+      <p>The token is stored locally in your browser via <code>chrome.storage.local</code> and is only sent to <code>api.github.com</code>.</p>
+    </div>
   </div>
-  <div class="help">
-    <p>Required scopes:</p>
-    <ul>
-      <li><strong>Classic token:</strong> <code>repo</code> (for private repos) or <code>public_repo</code> (public only).</li>
-      <li><strong>Fine-grained token:</strong> <code>Actions: Read</code> on the repos you want to browse.</li>
-    </ul>
-    <p>Create one at <a href="https://github.com/settings/tokens" target="_blank" rel="noopener">github.com/settings/tokens</a>.</p>
-    <p>The token is stored locally in your browser via <code>chrome.storage.local</code> and is only sent to <code>api.github.com</code>.</p>
+
+  <!-- OAuth section -->
+  <div id="oauth-section" class="auth-section">
+    <label class="field-label" for="client-id">OAuth App Client ID</label>
+    <div class="row">
+      <input id="client-id" type="text" class="mono" placeholder="Ov23li…" autocomplete="off" />
+      <button id="client-id-save">Save</button>
+      <span class="status-inline" id="client-id-status"></span>
+    </div>
+
+    <div id="oauth-connected" style="display:none">
+      <div class="oauth-status">
+        <img class="avatar" id="oauth-avatar" src="" alt="" />
+        <span class="connected-label" id="oauth-username"></span>
+        <button class="secondary" id="oauth-sign-out">Sign out</button>
+      </div>
+    </div>
+    <div id="oauth-disconnected">
+      <div class="oauth-status">
+        <span id="oauth-sign-in-status">Not connected.</span>
+      </div>
+      <button id="oauth-sign-in">Sign in with GitHub</button>
+      <span class="status-inline error" id="oauth-error"></span>
+    </div>
+
+    <div class="help">
+      <p><strong>Redirect URL</strong> — register this exact value as the callback URL in your GitHub OAuth App:</p>
+      <div class="redirect-url-box">
+        <code id="redirect-url"></code>
+        <button class="secondary" id="copy-redirect-url">Copy</button>
+      </div>
+      <details>
+        <summary>
+          <span class="chevron"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="12" height="12" fill="currentColor"><path d="M6.22 3.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L9.94 8 6.22 4.28a.75.75 0 0 1 0-1.06Z"/></svg></span>
+          Admin setup instructions
+        </summary>
+        <div class="details-body">
+          <ol>
+            <li>
+              Go to <strong>GitHub → Settings → Developer settings → OAuth Apps → New OAuth App</strong>
+              (or <code>github.com/organizations/&lt;org&gt;/settings/applications</code> for an org-owned app).
+            </li>
+            <li>
+              Fill in the form:
+              <table>
+                <tr><th>Field</th><th>Value</th></tr>
+                <tr><td>Application name</td><td>Workflow Navigator</td></tr>
+                <tr><td>Homepage URL</td><td>Your org's GitHub URL</td></tr>
+                <tr><td>Authorization callback URL</td><td>Copy the <strong>Redirect URL</strong> shown above</td></tr>
+              </table>
+            </li>
+            <li>Click <strong>Register application</strong>.</li>
+            <li>
+              Copy the <strong>Client ID</strong> from the next screen — it is not secret and can be shared with all users.
+              No client secret is needed; this extension uses PKCE.
+            </li>
+            <li>Share the Client ID with your team. Each user enters it in the <strong>OAuth App Client ID</strong> field above, saves it, then clicks <strong>Sign in with GitHub</strong>.</li>
+          </ol>
+          <p>
+            <strong>Stable extension ID:</strong> the Redirect URL contains the extension's ID.
+            For a published (Web Store) extension the ID is permanent.
+            For a development install it varies unless you pin a <code>key</code> in <code>manifest.json</code>.
+          </p>
+        </div>
+      </details>
+    </div>
   </div>
+
   <script src="options.js"></script>
 </body>
 </html>
