@@ -3,7 +3,7 @@
   "name": "Workflow Navigator",
   "version": "0.2.0",
   "description": "Hierarchical, searchable view of GitHub Actions workflows for monorepos.",
-  "permissions": ["storage", "identity"],
+  "permissions": ["storage"],
   "host_permissions": ["https://api.github.com/*", "https://github.com/*"],
   "content_scripts": [
     {

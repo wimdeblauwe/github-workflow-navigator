@@ -51,15 +51,10 @@ const oauthConnected = document.getElementById('oauth-connected');
 const oauthDisconnected = document.getElementById('oauth-disconnected');
 const oauthAvatar = document.getElementById('oauth-avatar');
 const oauthUsername = document.getElementById('oauth-username');
-const redirectUrlEl = document.getElementById('redirect-url');
-const copyRedirectBtn = document.getElementById('copy-redirect-url');
-
-const redirectUrl = chrome.identity.getRedirectURL();
-redirectUrlEl.textContent = redirectUrl;
-
-copyRedirectBtn.addEventListener('click', () => {
-  navigator.clipboard.writeText(redirectUrl).then(() => flash(copyRedirectBtn, 'Copied!'));
-});
+const deviceFlowEl = document.getElementById('device-flow');
+const deviceUserCodeEl = document.getElementById('device-user-code');
+const openGithubDeviceBtn = document.getElementById('open-github-device');
+const cancelDeviceFlowBtn = document.getElementById('cancel-device-flow');
 
 chrome.storage.local.get(['oauthClientId', 'oauthToken', 'oauthUser', 'oauthAvatar'], (r) => {
   if (r.oauthClientId) clientIdInput.value = r.oauthClientId;
@@ -115,56 +110,85 @@ function showOauthError(msg) {
   setTimeout(() => { oauthError.textContent = ''; }, 5000);
 }
 
-// ── OAuth PKCE helpers ────────────────────────────────────────────────────────
-
-function generateCodeVerifier() {
-  const bytes = new Uint8Array(32);
-  crypto.getRandomValues(bytes);
-  return btoa(String.fromCharCode(...bytes))
-    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-}
-
-async function generateCodeChallenge(verifier) {
-  const data = new TextEncoder().encode(verifier);
-  const digest = await crypto.subtle.digest('SHA-256', data);
-  return btoa(String.fromCharCode(...new Uint8Array(digest)))
-    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-}
+// ── OAuth Device Flow ─────────────────────────────────────────────────────────
 
 async function startOAuthFlow(clientId) {
-  const verifier = generateCodeVerifier();
-  const challenge = await generateCodeChallenge(verifier);
-  const state = crypto.randomUUID();
-
-  const params = new URLSearchParams({
-    client_id: clientId,
-    redirect_uri: redirectUrl,
-    scope: 'repo',
-    state,
-    code_challenge: challenge,
-    code_challenge_method: 'S256',
-  });
-
-  const responseUrl = await chrome.identity.launchWebAuthFlow({
-    url: `https://github.com/login/oauth/authorize?${params}`,
-    interactive: true,
-  });
-
-  const responseParams = new URL(responseUrl).searchParams;
-  if (responseParams.get('state') !== state) throw new Error('State mismatch — possible CSRF.');
-  const code = responseParams.get('code');
-  if (!code) throw new Error('No authorization code returned.');
-
-  const tokenRes = await fetch('https://github.com/login/oauth/access_token', {
+  const codeRes = await fetch('https://github.com/login/device/code', {
     method: 'POST',
     headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-    body: JSON.stringify({ client_id: clientId, code, redirect_uri: redirectUrl, code_verifier: verifier }),
+    body: JSON.stringify({ client_id: clientId, scope: 'repo' }),
   });
-  const tokenData = await tokenRes.json();
-  if (!tokenData.access_token) {
-    throw new Error(tokenData.error_description || tokenData.error || 'Token exchange failed.');
-  }
-  return tokenData.access_token;
+  if (!codeRes.ok) throw new Error(`Device code request failed (${codeRes.status}).`);
+  const codeData = await codeRes.json();
+  if (codeData.error) throw new Error(codeData.error_description || codeData.error);
+
+  const { device_code, user_code, verification_uri, expires_in, interval } = codeData;
+
+  deviceUserCodeEl.textContent = user_code;
+  openGithubDeviceBtn.onclick = () => window.open(verification_uri, '_blank');
+  deviceFlowEl.style.display = 'block';
+  window.open(verification_uri, '_blank');
+
+  return pollForToken(clientId, device_code, interval || 5, expires_in || 900);
+}
+
+function pollForToken(clientId, deviceCode, initialInterval, expiresIn) {
+  let pollInterval = initialInterval;
+  const deadline = Date.now() + expiresIn * 1000;
+
+  return new Promise((resolve, reject) => {
+    let cancelled = false;
+    let timeoutId = null;
+
+    cancelDeviceFlowBtn.onclick = () => {
+      cancelled = true;
+      clearTimeout(timeoutId);
+      deviceFlowEl.style.display = 'none';
+      reject(new Error('Authorization cancelled.'));
+    };
+
+    async function poll() {
+      if (cancelled) return;
+      if (Date.now() > deadline) {
+        deviceFlowEl.style.display = 'none';
+        reject(new Error('Authorization expired. Please try again.'));
+        return;
+      }
+
+      try {
+        const res = await fetch('https://github.com/login/oauth/access_token', {
+          method: 'POST',
+          headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            client_id: clientId,
+            device_code: deviceCode,
+            grant_type: 'urn:ietf:params:oauth:grant-type:device_code',
+          }),
+        });
+        const data = await res.json();
+
+        if (data.access_token) {
+          deviceFlowEl.style.display = 'none';
+          resolve(data.access_token);
+          return;
+        }
+
+        if (data.error === 'slow_down') pollInterval += 5;
+
+        if (data.error === 'authorization_pending' || data.error === 'slow_down') {
+          timeoutId = setTimeout(poll, pollInterval * 1000);
+          return;
+        }
+
+        deviceFlowEl.style.display = 'none';
+        reject(new Error(data.error_description || data.error || 'Authorization failed.'));
+      } catch {
+        if (!cancelled) timeoutId = setTimeout(poll, pollInterval * 1000);
+      }
+    }
+
+    timeoutId = setTimeout(poll, pollInterval * 1000);
+  });
 }
 
 async function fetchGitHubUser(token) {
