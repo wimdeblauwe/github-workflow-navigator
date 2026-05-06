@@ -22,3 +22,13 @@ The extension panel:
 Settings:
 
 ![Screenshot of the parsing settings](/screenshots/settings-parsing.png)
+
+## Installation
+
+1. Clone this repository
+2. Open `chrome://extensions/` in your browser
+3. Enable `Developer mode`
+4. Click `Load unpacked` and select the `extension` folder
+5. Open a GitHub Actions page and enable the extension.
+6. Configure the authentication method.
+7. Enjoy!
