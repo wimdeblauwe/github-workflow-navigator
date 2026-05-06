@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "GitHub Workflow Navigator",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Hierarchical, searchable view of GitHub Actions workflows for monorepos.",
   "permissions": [
     "storage"
