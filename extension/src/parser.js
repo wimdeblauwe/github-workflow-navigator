@@ -23,8 +23,12 @@ function parseFilename(filename, config) {
 
   if (patterns.length === 0) return { kind: 'raw', filename };
 
-  for (let i = 0; i < patterns.length; i++) {
-    const { suffix, label } = patterns[i];
+  const sorted = patterns
+    .map((p, i) => ({ ...p, originalIndex: i }))
+    .sort((a, b) => (b.suffix || '').length - (a.suffix || '').length);
+
+  for (let i = 0; i < sorted.length; i++) {
+    const { suffix, label } = sorted[i];
     if (!suffix) continue;
 
     let appPart, variant;
@@ -45,7 +49,7 @@ function parseFilename(filename, config) {
 
     const segments = sep ? appPart.split(sep).filter(Boolean) : [appPart];
     if (segments.length === 0) return { kind: 'unrecognized', filename };
-    return { kind: 'app', filename, segments, type: label, color: patterns[i].color || 'blue', patternIndex: i };
+    return { kind: 'app', filename, segments, type: label, color: sorted[i].color || 'blue', patternIndex: sorted[i].originalIndex };
   }
 
   return { kind: 'unrecognized', filename };

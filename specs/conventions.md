@@ -33,7 +33,7 @@ Two categories — `ci` (continuous integration) and `cd` (continuous delivery):
 
 1. Strip the `.yml` extension.
 2. If the filename starts with `_`, mark as helper. Done.
-3. Otherwise, try CI suffixes (longest match wins so `_ci-release-snapshot` beats `_ci-release`):
+3. Otherwise, sort all configured patterns by suffix length descending, then try each in order — first match wins. Sorting by length means a longer suffix always beats a shorter one that is a prefix of it (e.g. `_ci-release-snapshot` always beats `_ci-release`) regardless of the order patterns appear in configuration. The built-in CI suffixes are:
    - `_ci-release-snapshot`
    - `_ci-sonar-qube`
    - `_ci-release`
