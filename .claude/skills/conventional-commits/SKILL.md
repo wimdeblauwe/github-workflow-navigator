@@ -67,6 +67,8 @@ EOF
 
 Show the commit hash and subject line so the user can confirm what was created.
 
+Do NOT push. Pushing is a separate action the user will take explicitly.
+
 ## Examples
 
 | Changes                                                         | Message                                                                       |
