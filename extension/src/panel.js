@@ -19,7 +19,7 @@ function createPanel({ onRefresh, onOpenSettings }) {
       <button class="wn-icon-btn" data-act="collapse" title="Collapse">×</button>
     </div>
     <div class="wn-search">
-      <input type="search" placeholder="Search (coming soon)" disabled />
+      <input type="search" placeholder="Search workflows…" autocomplete="off" spellcheck="false" />
     </div>
     <div class="wn-body"></div>
     <div class="wn-footer">
@@ -28,9 +28,11 @@ function createPanel({ onRefresh, onOpenSettings }) {
   `;
   const body = root.querySelector('.wn-body');
   const helperToggle = root.querySelector('[data-act="show-helpers"]');
+  const searchInput = root.querySelector('.wn-search input');
 
   let lastData = null;
   let showHelpers = false;
+  let query = '';
 
   root.querySelector('[data-act="refresh"]').addEventListener('click', () => onRefresh && onRefresh());
   root.querySelector('[data-act="settings"]').addEventListener('click', () => onOpenSettings && onOpenSettings());
@@ -40,6 +42,17 @@ function createPanel({ onRefresh, onOpenSettings }) {
   helperToggle.addEventListener('change', () => {
     showHelpers = helperToggle.checked;
     if (lastData) renderTree(lastData);
+  });
+  searchInput.addEventListener('input', () => {
+    query = searchInput.value.trim().toLowerCase();
+    if (lastData) renderTree(lastData);
+  });
+  searchInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      searchInput.value = '';
+      query = '';
+      if (lastData) renderTree(lastData);
+    }
   });
 
   function showLoading() {
@@ -69,20 +82,28 @@ function createPanel({ onRefresh, onOpenSettings }) {
   function renderTree(data) {
     lastData = data;
     body.innerHTML = '';
-    const { tree, owner, repo, helpers, unrecognized } = data;
+    const { owner, repo } = data;
 
-    if (tree.children.size === 0 && tree.leaves.length === 0
-        && helpers.length === 0 && unrecognized.length === 0) {
-      showEmpty('No workflows found.');
+    const apps = query ? data.apps.filter((w) => itemMatches(w, query)) : data.apps;
+    const helpers = query ? data.helpers.filter((w) => itemMatches(w, query)) : data.helpers;
+    const unrecognized = query ? data.unrecognized.filter((w) => itemMatches(w, query)) : data.unrecognized;
+
+    const showHelpersSection = showHelpers && helpers.length > 0;
+    const showUnrecSection = unrecognized.length > 0;
+
+    if (apps.length === 0 && !showHelpersSection && !showUnrecSection) {
+      showEmpty(query ? `No workflows match “${query}”.` : 'No workflows found.');
       return;
     }
 
-    body.appendChild(renderNode(tree, owner, repo, true));
-
-    if (showHelpers && helpers.length) {
+    if (apps.length > 0) {
+      const tree = buildTree(apps);
+      body.appendChild(renderNode(tree, owner, repo, !!query));
+    }
+    if (showHelpersSection) {
       body.appendChild(renderFlatSection(`Helpers (${helpers.length})`, helpers, owner, repo));
     }
-    if (unrecognized.length) {
+    if (showUnrecSection) {
       body.appendChild(renderFlatSection(`Unrecognized (${unrecognized.length})`, unrecognized, owner, repo));
     }
   }
@@ -90,14 +111,18 @@ function createPanel({ onRefresh, onOpenSettings }) {
   return { root, showLoading, showError, renderTree };
 }
 
-function renderNode(node, owner, repo, isRoot) {
+function itemMatches(item, query) {
+  return (item.filename || '').toLowerCase().includes(query)
+      || (item.githubName || '').toLowerCase().includes(query);
+}
+
+function renderNode(node, owner, repo, expandAll) {
   const ul = document.createElement('ul');
   ul.className = 'wn-tree';
 
   const sortedKeys = [...node.children.keys()].sort();
   for (const seg of sortedKeys) {
-    const child = node.children.get(seg);
-    ul.appendChild(renderFolder(seg, child, owner, repo));
+    ul.appendChild(renderFolder(seg, node.children.get(seg), owner, repo, expandAll));
   }
   for (const leaf of node.leaves) {
     ul.appendChild(renderLeaf(leaf, owner, repo));
@@ -105,7 +130,7 @@ function renderNode(node, owner, repo, isRoot) {
   return ul;
 }
 
-function renderFolder(name, node, owner, repo) {
+function renderFolder(name, node, owner, repo, expandAll) {
   const li = document.createElement('li');
   li.className = 'wn-node wn-folder';
 
@@ -114,7 +139,7 @@ function renderFolder(name, node, owner, repo) {
 
   const toggle = document.createElement('span');
   toggle.className = 'wn-toggle';
-  toggle.textContent = '▸';
+  toggle.textContent = expandAll ? '▾' : '▸';
 
   const label = document.createElement('span');
   label.className = 'wn-name';
@@ -128,8 +153,8 @@ function renderFolder(name, node, owner, repo) {
 
   const childWrap = document.createElement('div');
   childWrap.className = 'wn-children';
-  childWrap.style.display = 'none';
-  childWrap.appendChild(renderNode(node, owner, repo, false));
+  childWrap.style.display = expandAll ? 'block' : 'none';
+  childWrap.appendChild(renderNode(node, owner, repo, expandAll));
 
   header.addEventListener('click', () => {
     const open = childWrap.style.display !== 'none';
