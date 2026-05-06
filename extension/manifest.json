@@ -11,6 +11,7 @@
       "js": [
         "src/parser.js",
         "src/api.js",
+        "src/cache.js",
         "src/panel.js",
         "src/content.js"
       ],

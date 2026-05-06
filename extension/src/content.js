@@ -5,14 +5,14 @@
   if (!repoInfo) return;
 
   const panel = createPanel({
-    onRefresh: () => load(repoInfo.owner, repoInfo.repo),
+    onRefresh: () => load(repoInfo.owner, repoInfo.repo, true),
     onOpenSettings: () => chrome.runtime.sendMessage({ type: 'open-options' }),
   });
   document.body.appendChild(panel.root);
 
   load(repoInfo.owner, repoInfo.repo);
 
-  async function load(owner, repo) {
+  async function load(owner, repo, force = false) {
     panel.showLoading();
     const token = await getToken();
     if (!token) {
@@ -20,7 +20,11 @@
       return;
     }
     try {
-      const workflows = await fetchAllWorkflows(owner, repo, token);
+      let workflows = force ? null : await getCachedWorkflows(owner, repo);
+      if (!workflows) {
+        workflows = await fetchAllWorkflows(owner, repo, token);
+        await setCachedWorkflows(owner, repo, workflows);
+      }
       const parsed = workflows.map((w) => {
         const p = parseFilename(filenameFromPath(w.path));
         p.githubName = w.name;
