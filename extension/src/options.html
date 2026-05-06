@@ -7,12 +7,66 @@
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
     padding: 24px;
-    max-width: 600px;
+    max-width: 900px;
     color: #1f2328;
   }
-  h1 { font-size: 18px; margin: 0 0 20px; }
-  h2 { font-size: 14px; margin: 0 0 12px; font-weight: 600; }
+  h1 { font-size: 18px; margin: 0 0 24px; }
+  h2 {
+    font-size: 24px;
+    margin: 0 0 8px;
+    font-weight: 400;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #d0d7de;
+  }
+  .section-desc { font-size: 13px; color: #57606a; margin: 16px 0 20px; }
 
+  /* Layout */
+  .settings-layout {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+  }
+  .settings-nav {
+    width: 200px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 24px;
+  }
+  .settings-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .settings-nav li { margin: 1px 0; }
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    text-align: left;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #1f2328;
+    font-weight: 400;
+    cursor: pointer;
+    border: none;
+    border-left: 2px solid transparent;
+    background: none;
+    white-space: nowrap;
+    box-sizing: border-box;
+  }
+  .nav-link:hover { background: #f6f8fa; }
+  .nav-link.active {
+    background: #eaeef2;
+    font-weight: 600;
+    border-left-color: #0969da;
+  }
+  .settings-content { flex: 1; min-width: 0; }
+  .settings-section { display: none; }
+  .settings-section.active { display: block; }
+
+  /* Auth */
   .auth-methods {
     border: 1px solid #d0d7de;
     border-radius: 6px;
@@ -32,10 +86,10 @@
     cursor: pointer;
     padding: 4px 0;
   }
-
   .auth-section { display: none; }
   .auth-section.active { display: block; }
 
+  /* Form controls */
   label.field-label {
     display: block;
     margin-bottom: 6px;
@@ -79,10 +133,17 @@
     border-color: #d0d7de;
   }
   button.secondary:hover { background: #eaeef2; }
-
   .status-inline { margin-left: 8px; font-size: 13px; color: #1a7f37; }
   .status-inline.error { color: #cf222e; }
+  .dirty-indicator {
+    display: none;
+    font-size: 12px;
+    color: #bf8700;
+    align-self: center;
+  }
+  .dirty-indicator.visible { display: inline; }
 
+  /* OAuth */
   .oauth-status {
     display: flex;
     align-items: center;
@@ -97,25 +158,6 @@
     border: 1px solid #d0d7de;
   }
   .connected-label { font-weight: 600; }
-
-  .help {
-    margin-top: 20px;
-    color: #57606a;
-    font-size: 13px;
-    line-height: 1.6;
-    border-top: 1px solid #d0d7de;
-    padding-top: 16px;
-  }
-  .help p { margin: 0 0 8px; }
-  .help ul { margin: 4px 0 8px; padding-left: 20px; }
-  .help a { color: #0969da; }
-  code {
-    background: #f6f8fa;
-    padding: 1px 5px;
-    border-radius: 3px;
-    font-size: 12px;
-    font-family: ui-monospace, SFMono-Regular, monospace;
-  }
   .device-flow-box {
     margin-top: 12px;
     padding: 12px;
@@ -134,17 +176,76 @@
     border: 1px solid #d0d7de;
     border-radius: 4px;
   }
+
+  /* Help / hints */
+  .help {
+    margin-top: 20px;
+    color: #57606a;
+    font-size: 13px;
+    line-height: 1.6;
+    border-top: 1px solid #d0d7de;
+    padding-top: 16px;
+  }
+  .help p { margin: 0 0 8px; }
+  .help ul { margin: 4px 0 8px; padding-left: 20px; }
+  .help a { color: #0969da; }
+  code {
+    background: #f6f8fa;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-family: ui-monospace, SFMono-Regular, monospace;
+  }
   .field-hint {
     margin: 2px 0 8px;
     font-size: 13px;
     color: #57606a;
     line-height: 1.5;
   }
-  .section-divider {
-    border: none;
-    border-top: 1px solid #d0d7de;
-    margin: 24px 0;
+
+  /* Details / summary */
+  details {
+    margin-top: 16px;
+    border: 1px solid #d0d7de;
+    border-radius: 6px;
   }
+  details summary {
+    padding: 8px 12px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  details summary .chevron {
+    display: inline-flex;
+    align-items: center;
+    color: #57606a;
+    transition: transform 0.15s;
+    flex-shrink: 0;
+  }
+  details[open] summary .chevron { transform: rotate(90deg); }
+  details .details-body {
+    padding: 12px 16px 16px;
+    border-top: 1px solid #d0d7de;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #57606a;
+  }
+  details .details-body ol { margin: 8px 0; padding-left: 20px; }
+  details .details-body li { margin-bottom: 6px; }
+  details .details-body table { border-collapse: collapse; width: 100%; margin: 8px 0; }
+  details .details-body th, details .details-body td {
+    text-align: left;
+    padding: 5px 8px;
+    border: 1px solid #d0d7de;
+    font-size: 12px;
+  }
+  details .details-body th { background: #f6f8fa; font-weight: 600; }
+
+  /* Patterns */
   .patterns-header {
     display: flex;
     align-items: center;
@@ -187,46 +288,6 @@
   }
   .color-swatch:hover { opacity: 0.75; }
   .color-swatch.selected { border-color: #1f2328; }
-  details {
-    margin-top: 16px;
-    border: 1px solid #d0d7de;
-    border-radius: 6px;
-  }
-  details summary {
-    padding: 8px 12px;
-    font-weight: 600;
-    font-size: 13px;
-    cursor: pointer;
-    list-style: none;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  details summary .chevron {
-    display: inline-flex;
-    align-items: center;
-    color: #57606a;
-    transition: transform 0.15s;
-    flex-shrink: 0;
-  }
-  details[open] summary .chevron { transform: rotate(90deg); }
-  details .details-body {
-    padding: 12px 16px 16px;
-    border-top: 1px solid #d0d7de;
-    font-size: 13px;
-    line-height: 1.6;
-    color: #57606a;
-  }
-  details .details-body ol { margin: 8px 0; padding-left: 20px; }
-  details .details-body li { margin-bottom: 6px; }
-  details .details-body table { border-collapse: collapse; width: 100%; margin: 8px 0; }
-  details .details-body th, details .details-body td {
-    text-align: left;
-    padding: 5px 8px;
-    border: 1px solid #d0d7de;
-    font-size: 12px;
-  }
-  details .details-body th { background: #f6f8fa; font-weight: 600; }
 
   /* Visibility section */
   .vis-mode-fieldset {
@@ -268,14 +329,6 @@
     color: #57606a;
     line-height: 1.5;
   }
-  .dirty-indicator {
-    display: none;
-    font-size: 12px;
-    color: #bf8700;
-    align-self: center;
-  }
-  .dirty-indicator.visible { display: inline; }
-
   textarea#panel-repo-list {
     width: 100%;
     padding: 8px;
@@ -291,238 +344,241 @@
 <body>
   <h1>GitHub Workflow Navigator</h1>
 
-  <h2>Authentication</h2>
+  <div class="settings-layout">
 
-  <fieldset class="auth-methods">
-    <legend>Authentication method</legend>
-    <label>
-      <input type="radio" name="authMethod" value="pat" />
-      Personal Access Token <em style="font-weight:400;color:#57606a">(default)</em>
-    </label>
-    <label>
-      <input type="radio" name="authMethod" value="oauth" />
-      GitHub OAuth
-    </label>
-  </fieldset>
-
-  <!-- PAT section -->
-  <div id="pat-section" class="auth-section">
-    <label class="field-label" for="token">Personal Access Token</label>
-    <input id="token" type="password" placeholder="ghp_… or github_pat_…" autocomplete="off" />
-    <div class="row" style="margin-top:10px">
-      <button id="pat-save">Save</button>
-      <span class="status-inline" id="pat-status"></span>
-      <span class="dirty-indicator" id="pat-dirty">Unsaved changes</span>
-    </div>
-    <div class="help">
-      <p>Required scopes:</p>
+    <nav class="settings-nav">
       <ul>
-        <li><strong>Classic token:</strong> <code>repo</code> (private repos) or <code>public_repo</code> (public only).</li>
-        <li><strong>Fine-grained token:</strong> <code>Actions: Read</code> on the target repos.</li>
+        <li><button class="nav-link active" data-section="auth"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" fill="currentColor"><path d="M7.467.133a1.748 1.748 0 0 1 1.066 0l5.25 1.68A1.75 1.75 0 0 1 15 3.48V7c0 1.566-.32 3.182-1.303 4.682-.983 1.498-2.585 2.813-5.032 3.855a1.697 1.697 0 0 1-1.33 0c-2.447-1.042-4.049-2.357-5.032-3.855C1.32 10.182 1 8.566 1 7V3.48a1.75 1.75 0 0 1 1.217-1.667Zm.61 1.429a.25.25 0 0 0-.153 0l-5.25 1.68a.25.25 0 0 0-.174.238V7c0 1.358.275 2.666 1.057 3.86.784 1.194 2.121 2.34 4.366 3.297a.196.196 0 0 0 .154 0c2.245-.956 3.582-2.104 4.366-3.298C13.225 9.666 13.5 8.36 13.5 7V3.48a.25.25 0 0 0-.174-.237l-5.25-1.68Z"/></svg>Authentication</button></li>
+        <li><button class="nav-link" data-section="parsing"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" fill="currentColor"><path d="M2.75 0a.75.75 0 0 1 .75.75V3.5h.75a.75.75 0 0 1 0 1.5H3.5v7.25a.75.75 0 0 1-1.5 0V5H.75a.75.75 0 0 1 0-1.5H2V.75A.75.75 0 0 1 2.75 0Zm5.5 0a.75.75 0 0 1 .75.75v9.5h.75a.75.75 0 0 1 0 1.5H9v1.5a.75.75 0 0 1-1.5 0v-1.5h-.75a.75.75 0 0 1 0-1.5H7.5V.75A.75.75 0 0 1 8.25 0Zm5.5 0a.75.75 0 0 1 .75.75v3.75h.75a.75.75 0 0 1 0 1.5H15v6.25a.75.75 0 0 1-1.5 0V6h-.75a.75.75 0 0 1 0-1.5H13.5V.75a.75.75 0 0 1 .75-.75Z"/></svg>Parsing</button></li>
+        <li><button class="nav-link" data-section="visibility"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16" fill="currentColor"><path d="M8 2c1.981 0 3.671.992 4.933 2.078 1.27 1.091 2.187 2.345 2.637 3.023a1.62 1.62 0 0 1 0 1.798c-.45.678-1.367 1.932-2.637 3.023C11.671 13.008 9.981 14 8 14c-1.981 0-3.671-.992-4.933-2.078C1.797 10.83.88 9.576.43 8.898a1.62 1.62 0 0 1 0-1.798c.45-.677 1.367-1.931 2.637-3.022C4.329 2.992 6.019 2 8 2ZM1.679 7.932a.12.12 0 0 0 0 .136c.411.622 1.241 1.75 2.366 2.717C5.176 11.758 6.527 12.5 8 12.5c1.473 0 2.824-.742 3.955-1.715 1.125-.967 1.955-2.095 2.366-2.717a.12.12 0 0 0 0-.136c-.411-.621-1.241-1.75-2.366-2.717C10.824 4.242 9.473 3.5 8 3.5c-1.473 0-2.824.742-3.955 1.715-1.125.966-1.955 2.096-2.366 2.717ZM8 10a2 2 0 1 1-.001-3.999A2 2 0 0 1 8 10Z"/></svg>Panel Visibility</button></li>
       </ul>
-      <p>Create one at <a href="https://github.com/settings/tokens" target="_blank" rel="noopener">github.com/settings/tokens</a>. If your org uses SAML SSO, authorise the token for the org after creating it.</p>
-      <p>The token is stored locally in your browser via <code>chrome.storage.local</code> and is only sent to <code>api.github.com</code>.</p>
-    </div>
-  </div>
+    </nav>
 
-  <!-- OAuth section -->
-  <div id="oauth-section" class="auth-section">
-    <label class="field-label" for="client-id">OAuth App Client ID</label>
-    <div class="row">
-      <input id="client-id" type="text" class="mono" placeholder="Ov23li…" autocomplete="off" />
-      <button id="client-id-save">Save</button>
-      <span class="status-inline" id="client-id-status"></span>
-      <span class="dirty-indicator" id="client-id-dirty">Unsaved changes</span>
-    </div>
+    <div class="settings-content">
 
-    <div id="oauth-connected" style="display:none">
-      <div class="oauth-status">
-        <img class="avatar" id="oauth-avatar" src="" alt="" />
-        <span class="connected-label" id="oauth-username"></span>
-        <button class="secondary" id="oauth-sign-out">Sign out</button>
-      </div>
-    </div>
-    <div id="oauth-disconnected">
-      <div class="oauth-status">
-        <span id="oauth-sign-in-status">Not connected.</span>
-      </div>
-      <button id="oauth-sign-in">Sign in with GitHub</button>
-      <span class="status-inline error" id="oauth-error"></span>
-      <div id="device-flow" style="display:none">
-        <div class="device-flow-box">
-          <p>Enter this code at <strong>github.com/login/device</strong>:</p>
-          <div class="device-code-row">
-            <code id="device-user-code"></code>
-            <button class="secondary" id="open-github-device">Open GitHub</button>
+      <!-- ── Authentication ─────────────────────────────────────────────── -->
+      <div id="section-auth" class="settings-section active">
+        <h2>Authentication</h2>
+        <p class="section-desc">Choose how the extension authenticates with GitHub.</p>
+
+        <fieldset class="auth-methods">
+          <legend>Authentication method</legend>
+          <label>
+            <input type="radio" name="authMethod" value="pat" />
+            Personal Access Token <em style="font-weight:400;color:#57606a">(default)</em>
+          </label>
+          <label>
+            <input type="radio" name="authMethod" value="oauth" />
+            GitHub OAuth
+          </label>
+        </fieldset>
+
+        <div id="pat-section" class="auth-section">
+          <label class="field-label" for="token">Personal Access Token</label>
+          <input id="token" type="password" placeholder="ghp_… or github_pat_…" autocomplete="off" />
+          <div class="row" style="margin-top:10px">
+            <button id="pat-save">Save</button>
+            <span class="status-inline" id="pat-status"></span>
+            <span class="dirty-indicator" id="pat-dirty">Unsaved changes</span>
           </div>
-          <p class="waiting">Waiting for authorization…</p>
+          <div class="help">
+            <p>Required scopes:</p>
+            <ul>
+              <li><strong>Classic token:</strong> <code>repo</code> (private repos) or <code>public_repo</code> (public only).</li>
+              <li><strong>Fine-grained token:</strong> <code>Actions: Read</code> on the target repos.</li>
+            </ul>
+            <p>Create one at <a href="https://github.com/settings/tokens" target="_blank" rel="noopener">github.com/settings/tokens</a>. If your org uses SAML SSO, authorise the token for the org after creating it.</p>
+            <p>The token is stored locally in your browser via <code>chrome.storage.local</code> and is only sent to <code>api.github.com</code>.</p>
+          </div>
         </div>
-        <div class="row" style="margin-top:8px">
-          <button class="secondary" id="cancel-device-flow">Cancel</button>
+
+        <div id="oauth-section" class="auth-section">
+          <label class="field-label" for="client-id">OAuth App Client ID</label>
+          <div class="row">
+            <input id="client-id" type="text" class="mono" placeholder="Ov23li…" autocomplete="off" />
+            <button id="client-id-save">Save</button>
+            <span class="status-inline" id="client-id-status"></span>
+            <span class="dirty-indicator" id="client-id-dirty">Unsaved changes</span>
+          </div>
+
+          <div id="oauth-connected" style="display:none">
+            <div class="oauth-status">
+              <img class="avatar" id="oauth-avatar" src="" alt="" />
+              <span class="connected-label" id="oauth-username"></span>
+              <button class="secondary" id="oauth-sign-out">Sign out</button>
+            </div>
+          </div>
+          <div id="oauth-disconnected">
+            <div class="oauth-status">
+              <span id="oauth-sign-in-status">Not connected.</span>
+            </div>
+            <button id="oauth-sign-in">Sign in with GitHub</button>
+            <span class="status-inline error" id="oauth-error"></span>
+            <div id="device-flow" style="display:none">
+              <div class="device-flow-box">
+                <p>Enter this code at <strong>github.com/login/device</strong>:</p>
+                <div class="device-code-row">
+                  <code id="device-user-code"></code>
+                  <button class="secondary" id="open-github-device">Open GitHub</button>
+                </div>
+                <p class="waiting">Waiting for authorization…</p>
+              </div>
+              <div class="row" style="margin-top:8px">
+                <button class="secondary" id="cancel-device-flow">Cancel</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="help">
+            <details>
+              <summary>
+                <span class="chevron"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="12" height="12" fill="currentColor"><path d="M6.22 3.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L9.94 8 6.22 4.28a.75.75 0 0 1 0-1.06Z"/></svg></span>
+                Admin setup instructions
+              </summary>
+              <div class="details-body">
+                <ol>
+                  <li>
+                    Go to <strong>GitHub → Settings → Developer settings → OAuth Apps → New OAuth App</strong>
+                    (or <code>github.com/organizations/&lt;org&gt;/settings/applications</code> for an org-owned app).
+                  </li>
+                  <li>
+                    Fill in the form:
+                    <table>
+                      <tr><th>Field</th><th>Value</th></tr>
+                      <tr><td>Application name</td><td>GitHub Workflow Navigator</td></tr>
+                      <tr><td>Homepage URL</td><td>Your org's GitHub URL</td></tr>
+                      <tr><td>Authorization callback URL</td><td>Any valid URL (e.g. <code>https://github.com</code>) — not used by Device Flow</td></tr>
+                    </table>
+                  </li>
+                  <li>Click <strong>Register application</strong>.</li>
+                  <li>On the next screen, check <strong>Enable Device Flow</strong> and click <strong>Update application</strong>.</li>
+                  <li>
+                    Copy the <strong>Client ID</strong> — it is not secret and can be shared with all users.
+                    No client secret is needed.
+                  </li>
+                  <li>Share the Client ID with your team. Each user enters it in the <strong>OAuth App Client ID</strong> field above, saves it, then clicks <strong>Sign in with GitHub</strong>.</li>
+                </ol>
+                <p>When signing in, GitHub will open and ask you to enter a short code. Once you approve, the extension connects automatically.</p>
+              </div>
+            </details>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="help">
-      <details>
-        <summary>
-          <span class="chevron"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="12" height="12" fill="currentColor"><path d="M6.22 3.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L9.94 8 6.22 4.28a.75.75 0 0 1 0-1.06Z"/></svg></span>
-          Admin setup instructions
-        </summary>
-        <div class="details-body">
-          <ol>
-            <li>
-              Go to <strong>GitHub → Settings → Developer settings → OAuth Apps → New OAuth App</strong>
-              (or <code>github.com/organizations/&lt;org&gt;/settings/applications</code> for an org-owned app).
-            </li>
-            <li>
-              Fill in the form:
-              <table>
-                <tr><th>Field</th><th>Value</th></tr>
-                <tr><td>Application name</td><td>GitHub Workflow Navigator</td></tr>
-                <tr><td>Homepage URL</td><td>Your org's GitHub URL</td></tr>
-                <tr><td>Authorization callback URL</td><td>Any valid URL (e.g. <code>https://github.com</code>) — not used by Device Flow</td></tr>
-              </table>
-            </li>
-            <li>Click <strong>Register application</strong>.</li>
-            <li>On the next screen, check <strong>Enable Device Flow</strong> and click <strong>Update application</strong>.</li>
-            <li>
-              Copy the <strong>Client ID</strong> — it is not secret and can be shared with all users.
-              No client secret is needed.
-            </li>
-            <li>Share the Client ID with your team. Each user enters it in the <strong>OAuth App Client ID</strong> field above, saves it, then clicks <strong>Sign in with GitHub</strong>.</li>
-          </ol>
-          <p>
-            When signing in, GitHub will open and ask you to enter a short code. Once you approve, the extension connects automatically.
+      <!-- ── Parsing ────────────────────────────────────────────────────── -->
+      <div id="section-parsing" class="settings-section">
+        <h2>Parsing</h2>
+        <p class="section-desc">Configure how workflow filenames are parsed into the tree structure.</p>
+
+        <label class="field-label" for="separator">Separator</label>
+        <p class="field-hint">Character(s) that split the app path in filenames into tree folders (e.g. <code>myapp_service</code> with separator <code>_</code> → <code>myapp / service</code>).</p>
+        <div class="row">
+          <input id="separator" type="text" class="mono" style="max-width:80px" placeholder="_" autocomplete="off" />
+          <button id="separator-save">Save</button>
+          <span class="status-inline" id="separator-status"></span>
+          <span class="dirty-indicator" id="separator-dirty">Unsaved changes</span>
+        </div>
+
+        <div style="margin-top:24px">
+          <label class="field-label">Workflow patterns</label>
+          <p class="field-hint">Filename suffixes that identify a workflow type, in sort order. Leave empty to show all workflows as a plain list without categorisation.</p>
+          <div class="patterns-header">
+            <span class="col-suffix">Suffix</span>
+            <span class="col-label">Badge label</span>
+            <span class="col-color">Color</span>
+          </div>
+          <div id="patterns-list"></div>
+          <div class="row" style="margin-top:8px">
+            <button class="secondary icon-label-btn" id="add-pattern"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor"><path d="M7.75 2a.75.75 0 0 1 .75.75V7h4.25a.75.75 0 0 1 0 1.5H8.5v4.25a.75.75 0 0 1-1.5 0V8.5H2.75a.75.75 0 0 1 0-1.5H7V2.75A.75.75 0 0 1 7.75 2Z"/></svg> Add pattern</button>
+            <button class="secondary" id="reset-patterns">Reset to defaults</button>
+          </div>
+          <div class="row" style="margin-top:12px">
+            <button id="patterns-save">Save</button>
+            <span class="status-inline" id="patterns-status"></span>
+            <span class="dirty-indicator" id="patterns-dirty">Unsaved changes</span>
+          </div>
+        </div>
+        <p class="field-hint" style="margin-top:16px">Changes take effect after reloading the GitHub page.</p>
+      </div>
+
+      <!-- ── Panel Visibility ───────────────────────────────────────────── -->
+      <div id="section-visibility" class="settings-section">
+        <h2>Panel Visibility</h2>
+        <p class="section-desc">
+          Control when the workflow navigator panel appears. All enabled conditions must be
+          satisfied for the panel to show — they are evaluated in order.
+        </p>
+
+        <div style="margin-bottom:16px">
+          <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer">
+            <input type="checkbox" id="panel-auto-detect" style="margin-top:2px;flex-shrink:0" />
+            <span>
+              <strong style="font-size:13px">Auto-detect from pattern match</strong>
+              <p class="field-hint" style="margin:4px 0 0">
+                Only show the panel when at least one workflow filename matches a configured
+                naming pattern. If no patterns are configured (plain-list mode), this setting
+                has no effect and the panel always passes this check.
+              </p>
+            </span>
+          </label>
+        </div>
+
+        <div style="margin-bottom:16px">
+          <label class="field-label" for="panel-min-count">Minimum workflow count</label>
+          <p class="field-hint">
+            Only show the panel when the repository has at least this many workflows.
+            Set to <code>0</code> to disable this check.
+            When <em>Auto-detect</em> is on, only matched (recognised) workflows count toward
+            this threshold; otherwise all workflows are counted.
           </p>
+          <div class="row">
+            <input id="panel-min-count" type="number" min="0" step="1" style="max-width:80px;flex:none" />
+            <span style="font-size:13px;align-self:center;color:#57606a">workflows</span>
+          </div>
         </div>
-      </details>
-    </div>
-  </div>
 
-  <hr class="section-divider" />
+        <div style="margin-bottom:16px">
+          <label class="field-label">Repository filter</label>
+          <p class="field-hint">Choose whether the list below acts as an allow-list, a block-list, or is not used.</p>
+          <fieldset class="vis-mode-fieldset">
+            <legend class="vis-mode-legend">Mode</legend>
+            <label class="vis-radio-label">
+              <input type="radio" name="panelMode" value="all" />
+              <span class="vis-radio-text">Show on all repositories</span>
+              <span class="vis-radio-hint">The panel appears on every repository (subject to the conditions above).</span>
+            </label>
+            <label class="vis-radio-label">
+              <input type="radio" name="panelMode" value="allowlist" />
+              <span class="vis-radio-text">Show only on listed repositories</span>
+              <span class="vis-radio-hint">The panel only appears on repositories you add below; it is hidden everywhere else.</span>
+            </label>
+            <label class="vis-radio-label">
+              <input type="radio" name="panelMode" value="blocklist" />
+              <span class="vis-radio-text">Hide on listed repositories</span>
+              <span class="vis-radio-hint">The panel appears everywhere except on repositories you add below.</span>
+            </label>
+          </fieldset>
 
-  <!-- Parsing section -->
-  <div id="parsing-section">
-    <h2>Parsing</h2>
+          <div id="repo-list-wrap" style="margin-top:12px;display:none">
+            <label class="field-label" for="panel-repo-list">
+              Repositories <span style="font-weight:400;color:#57606a">(one per line, format: <code>owner/repo</code>)</span>
+            </label>
+            <textarea id="panel-repo-list" rows="5"
+                      placeholder="octocat/Hello-World&#10;my-org/my-repo"
+                      autocomplete="off" spellcheck="false"></textarea>
+          </div>
+        </div>
 
-    <label class="field-label" for="separator">Separator</label>
-    <p class="field-hint">Character(s) that split the app path in filenames into tree folders (e.g. <code>myapp_service</code> with separator <code>_</code> → <code>myapp / service</code>).</p>
-    <div class="row">
-      <input id="separator" type="text" class="mono" style="max-width:80px" placeholder="_" autocomplete="off" />
-      <button id="separator-save">Save</button>
-      <span class="status-inline" id="separator-status"></span>
-      <span class="dirty-indicator" id="separator-dirty">Unsaved changes</span>
-    </div>
-
-    <div style="margin-top:20px">
-      <label class="field-label">Workflow patterns</label>
-      <p class="field-hint">Filename suffixes that identify a workflow type, in sort order. Leave empty to show all workflows as a plain list without categorisation.</p>
-      <div class="patterns-header">
-        <span class="col-suffix">Suffix</span>
-        <span class="col-label">Badge label</span>
-        <span class="col-color">Color</span>
+        <div class="row">
+          <button id="visibility-save">Save</button>
+          <span class="status-inline" id="visibility-status"></span>
+          <span class="dirty-indicator" id="visibility-dirty">Unsaved changes</span>
+        </div>
+        <p class="field-hint" style="margin-top:16px">Changes take effect after reloading the GitHub page.</p>
       </div>
-      <div id="patterns-list"></div>
-      <div class="row" style="margin-top:8px">
-        <button class="secondary icon-label-btn" id="add-pattern"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="14" height="14" fill="currentColor"><path d="M7.75 2a.75.75 0 0 1 .75.75V7h4.25a.75.75 0 0 1 0 1.5H8.5v4.25a.75.75 0 0 1-1.5 0V8.5H2.75a.75.75 0 0 1 0-1.5H7V2.75A.75.75 0 0 1 7.75 2Z"/></svg> Add pattern</button>
-        <button class="secondary" id="reset-patterns">Reset to defaults</button>
-      </div>
-      <div class="row" style="margin-top:12px">
-        <button id="patterns-save">Save</button>
-        <span class="status-inline" id="patterns-status"></span>
-        <span class="dirty-indicator" id="patterns-dirty">Unsaved changes</span>
-      </div>
-    </div>
-  </div>
 
-  <hr class="section-divider" />
-
-  <!-- Visibility section -->
-  <div id="visibility-section">
-    <h2>Panel Visibility</h2>
-    <p class="field-hint">
-      Controls when the workflow navigator panel appears on a repository's Actions page.
-      All enabled conditions below must be satisfied for the panel to show — they are evaluated in order.
-    </p>
-
-    <!-- Auto-detect -->
-    <div style="margin-bottom:16px">
-      <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer">
-        <input type="checkbox" id="panel-auto-detect" style="margin-top:2px;flex-shrink:0" />
-        <span>
-          <strong style="font-size:13px">Auto-detect from pattern match</strong>
-          <p class="field-hint" style="margin:4px 0 0">
-            Only show the panel when at least one workflow filename matches a configured
-            naming pattern. If no patterns are configured (plain-list mode), this setting
-            has no effect and the panel always passes this check.
-          </p>
-        </span>
-      </label>
-    </div>
-
-    <!-- Minimum count -->
-    <div style="margin-bottom:16px">
-      <label class="field-label" for="panel-min-count">Minimum workflow count</label>
-      <p class="field-hint">
-        Only show the panel when the repository has at least this many workflows.
-        Set to <code>0</code> to disable this check.
-        When <em>Auto-detect</em> is on, only matched (recognised) workflows count toward
-        this threshold; otherwise all workflows are counted.
-      </p>
-      <div class="row">
-        <input id="panel-min-count" type="number" min="0" step="1"
-               style="max-width:80px;flex:none" />
-        <span style="font-size:13px;align-self:center;color:#57606a">workflows</span>
-      </div>
-    </div>
-
-    <!-- Repo list mode -->
-    <div style="margin-bottom:16px">
-      <label class="field-label">Repository filter</label>
-      <p class="field-hint">Choose whether the list below acts as an allow-list, a block-list, or is not used.</p>
-      <fieldset class="vis-mode-fieldset">
-        <legend class="vis-mode-legend">Mode</legend>
-
-        <label class="vis-radio-label">
-          <input type="radio" name="panelMode" value="all" />
-          <span class="vis-radio-text">Show on all repositories</span>
-          <span class="vis-radio-hint">The panel appears on every repository (subject to the conditions above).</span>
-        </label>
-
-        <label class="vis-radio-label">
-          <input type="radio" name="panelMode" value="allowlist" />
-          <span class="vis-radio-text">Show only on listed repositories</span>
-          <span class="vis-radio-hint">The panel only appears on repositories you add below; it is hidden everywhere else.</span>
-        </label>
-
-        <label class="vis-radio-label">
-          <input type="radio" name="panelMode" value="blocklist" />
-          <span class="vis-radio-text">Hide on listed repositories</span>
-          <span class="vis-radio-hint">The panel appears everywhere except on repositories you add below.</span>
-        </label>
-      </fieldset>
-
-      <div id="repo-list-wrap" style="margin-top:12px;display:none">
-        <label class="field-label" for="panel-repo-list">
-          Repositories <span style="font-weight:400;color:#57606a">(one per line, format: <code>owner/repo</code>)</span>
-        </label>
-        <textarea id="panel-repo-list" rows="5"
-                  placeholder="octocat/Hello-World&#10;my-org/my-repo"
-                  autocomplete="off" spellcheck="false"></textarea>
-      </div>
-    </div>
-
-    <div class="row">
-      <button id="visibility-save">Save</button>
-      <span class="status-inline" id="visibility-status"></span>
-      <span class="dirty-indicator" id="visibility-dirty">Unsaved changes</span>
-    </div>
-  </div>
-
-  <p class="field-hint" style="margin-top:24px;padding-top:16px;border-top:1px solid #d0d7de">
-    Changes to Parsing and Visibility settings take effect after reloading the GitHub page.
-  </p>
+    </div><!-- /settings-content -->
+  </div><!-- /settings-layout -->
 
   <script src="options.js"></script>
 </body>
