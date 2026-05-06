@@ -225,6 +225,57 @@
     font-size: 12px;
   }
   details .details-body th { background: #f6f8fa; font-weight: 600; }
+
+  /* Visibility section */
+  .vis-mode-fieldset {
+    border: 1px solid #d0d7de;
+    border-radius: 6px;
+    padding: 8px 14px 12px;
+    margin: 8px 0 0;
+  }
+  .vis-mode-legend {
+    font-size: 13px;
+    font-weight: 600;
+    padding: 0 4px;
+  }
+  .vis-radio-label {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
+    column-gap: 8px;
+    row-gap: 2px;
+    align-items: start;
+    padding: 6px 0;
+    cursor: pointer;
+  }
+  .vis-radio-label input[type="radio"] {
+    margin-top: 2px;
+    grid-row: 1;
+    grid-column: 1;
+  }
+  .vis-radio-text {
+    grid-row: 1;
+    grid-column: 2;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .vis-radio-hint {
+    grid-row: 2;
+    grid-column: 2;
+    font-size: 12px;
+    color: #57606a;
+    line-height: 1.5;
+  }
+  textarea#panel-repo-list {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #d0d7de;
+    border-radius: 6px;
+    font-size: 13px;
+    font-family: ui-monospace, SFMono-Regular, monospace;
+    box-sizing: border-box;
+    resize: vertical;
+  }
 </style>
 </head>
 <body>
@@ -366,6 +417,89 @@
         <button id="patterns-save">Save patterns</button>
         <span class="status-inline" id="patterns-status"></span>
       </div>
+    </div>
+    <p class="field-hint" style="margin-top:12px">Changes take effect after reloading the GitHub page.</p>
+  </div>
+
+  <hr class="section-divider" />
+
+  <!-- Visibility section -->
+  <div id="visibility-section">
+    <h2>Panel Visibility</h2>
+    <p class="field-hint">
+      Controls when the workflow navigator panel appears on a repository's Actions page.
+      All enabled conditions below must be satisfied for the panel to show — they are evaluated in order.
+    </p>
+
+    <!-- Auto-detect -->
+    <div style="margin-bottom:16px">
+      <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer">
+        <input type="checkbox" id="panel-auto-detect" style="margin-top:2px;flex-shrink:0" />
+        <span>
+          <strong style="font-size:13px">Auto-detect from pattern match</strong>
+          <p class="field-hint" style="margin:4px 0 0">
+            Only show the panel when at least one workflow filename matches a configured
+            naming pattern. If no patterns are configured (plain-list mode), this setting
+            has no effect and the panel always passes this check.
+          </p>
+        </span>
+      </label>
+    </div>
+
+    <!-- Minimum count -->
+    <div style="margin-bottom:16px">
+      <label class="field-label" for="panel-min-count">Minimum workflow count</label>
+      <p class="field-hint">
+        Only show the panel when the repository has at least this many workflows.
+        Set to <code>0</code> to disable this check.
+        When <em>Auto-detect</em> is on, only matched (recognised) workflows count toward
+        this threshold; otherwise all workflows are counted.
+      </p>
+      <div class="row">
+        <input id="panel-min-count" type="number" min="0" step="1"
+               style="max-width:80px;flex:none" />
+      </div>
+    </div>
+
+    <!-- Repo list mode -->
+    <div style="margin-bottom:16px">
+      <label class="field-label">Repository filter</label>
+      <p class="field-hint">Choose whether the list below acts as an allow-list, a block-list, or is not used.</p>
+      <fieldset class="vis-mode-fieldset">
+        <legend class="vis-mode-legend">Mode</legend>
+
+        <label class="vis-radio-label">
+          <input type="radio" name="panelMode" value="all" />
+          <span class="vis-radio-text">Show on all repositories</span>
+          <span class="vis-radio-hint">The panel appears on every repository (subject to the conditions above).</span>
+        </label>
+
+        <label class="vis-radio-label">
+          <input type="radio" name="panelMode" value="allowlist" />
+          <span class="vis-radio-text">Show only on listed repositories</span>
+          <span class="vis-radio-hint">The panel only appears on repositories you add below; it is hidden everywhere else.</span>
+        </label>
+
+        <label class="vis-radio-label">
+          <input type="radio" name="panelMode" value="blocklist" />
+          <span class="vis-radio-text">Hide on listed repositories</span>
+          <span class="vis-radio-hint">The panel appears everywhere except on repositories you add below.</span>
+        </label>
+      </fieldset>
+
+      <div id="repo-list-wrap" style="margin-top:12px;display:none">
+        <label class="field-label" for="panel-repo-list">
+          Repositories <span style="font-weight:400;color:#57606a">(one per line, format: <code>owner/repo</code>)</span>
+        </label>
+        <textarea id="panel-repo-list" rows="5"
+                  placeholder="octocat/Hello-World&#10;my-org/my-repo"
+                  autocomplete="off" spellcheck="false"></textarea>
+      </div>
+    </div>
+
+    <div class="row">
+      <button id="visibility-save">Save visibility settings</button>
+      <span class="status-inline" id="visibility-status"></span>
     </div>
     <p class="field-hint" style="margin-top:12px">Changes take effect after reloading the GitHub page.</p>
   </div>

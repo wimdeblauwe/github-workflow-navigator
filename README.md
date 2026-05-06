@@ -10,7 +10,8 @@ This Chrome extension adds a panel to the GitHub Actions page that allows you to
 * Search for workflows by name
 * Automatic tree structure of workflows based on configurable naming conventions
 * Optional configurable badges for labeling workflows
-* Authentication via PAT token or GitHub OAuth App with Device Flow. 
+* Authentication via PAT token or GitHub OAuth App with Device Flow
+* Configurable panel visibility: auto-detect from pattern match, minimum workflow count threshold, and per-repository allow/block list
 
 
 ## Screenshots

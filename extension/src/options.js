@@ -361,6 +361,46 @@ function createPatternRow(p, i) {
   return row;
 }
 
+// ── Visibility section ────────────────────────────────────────────────────────
+
+const panelAutoDetectEl  = document.getElementById('panel-auto-detect');
+const panelMinCountEl    = document.getElementById('panel-min-count');
+const panelModeRadios    = document.querySelectorAll('input[name="panelMode"]');
+const repoListWrap       = document.getElementById('repo-list-wrap');
+const panelRepoListEl    = document.getElementById('panel-repo-list');
+const visibilitySaveBtn  = document.getElementById('visibility-save');
+const visibilityStatus   = document.getElementById('visibility-status');
+
+function updateRepoListVisibility(mode) {
+  repoListWrap.style.display = (mode === 'allowlist' || mode === 'blocklist') ? 'block' : 'none';
+}
+
+chrome.storage.local.get(['panelAutoDetect', 'panelMinCount', 'panelMode', 'panelRepoList'], (r) => {
+  panelAutoDetectEl.checked = r.panelAutoDetect !== undefined ? r.panelAutoDetect : true;
+  panelMinCountEl.value     = r.panelMinCount   !== undefined ? r.panelMinCount   : 0;
+  const mode = r.panelMode || 'all';
+  document.querySelector(`input[name="panelMode"][value="${mode}"]`).checked = true;
+  panelRepoListEl.value = (r.panelRepoList || []).join('\n');
+  updateRepoListVisibility(mode);
+});
+
+panelModeRadios.forEach((radio) => {
+  radio.addEventListener('change', () => updateRepoListVisibility(radio.value));
+});
+
+visibilitySaveBtn.addEventListener('click', () => {
+  const autoDetect = panelAutoDetectEl.checked;
+  const minCount   = Math.max(0, parseInt(panelMinCountEl.value, 10) || 0);
+  const mode       = document.querySelector('input[name="panelMode"]:checked')?.value || 'all';
+  const repoList   = panelRepoListEl.value
+    .split('\n')
+    .map((s) => s.trim())
+    .filter((s) => /^[^/\s]+\/[^/\s]+$/.test(s));
+  chrome.storage.local.set({ panelAutoDetect: autoDetect, panelMinCount: minCount, panelMode: mode, panelRepoList: repoList }, () => {
+    flash(visibilityStatus, 'Saved.', false);
+  });
+});
+
 // ── Utilities ─────────────────────────────────────────────────────────────────
 
 function flash(el, msg, isBtn = false) {

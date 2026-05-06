@@ -52,6 +52,15 @@
         p.id = w.id;
         return p;
       });
+
+      const visConfig = await getVisibilityConfig();
+      if (!shouldShowPanel(visConfig, owner, repo, parsed)) {
+        panel.root.remove();
+        return;
+      }
+
+      if (!document.body.contains(panel.root)) document.body.appendChild(panel.root);
+
       panel.renderTree({
         owner, repo,
         apps:         parsed.filter((p) => p.kind === 'app'),
@@ -88,6 +97,39 @@
         });
       });
     });
+  }
+
+  function getVisibilityConfig() {
+    return new Promise((resolve) => {
+      chrome.storage.local.get(['panelAutoDetect', 'panelMinCount', 'panelMode', 'panelRepoList'], (r) => {
+        resolve({
+          autoDetect: r.panelAutoDetect !== undefined ? r.panelAutoDetect : true,
+          minCount:   r.panelMinCount   !== undefined ? r.panelMinCount   : 0,
+          mode:       r.panelMode       || 'all',
+          repoList:   r.panelRepoList   || [],
+        });
+      });
+    });
+  }
+
+  function shouldShowPanel(visConfig, owner, repo, parsed) {
+    const slug       = `${owner}/${repo}`;
+    const appCount   = parsed.filter((p) => p.kind === 'app').length;
+    const totalCount = parsed.length;
+    const isRawMode  = parsed.some((p) => p.kind === 'raw');
+
+    if (visConfig.mode === 'allowlist' && !visConfig.repoList.includes(slug)) return false;
+    if (visConfig.mode === 'blocklist' &&  visConfig.repoList.includes(slug)) return false;
+
+    // Auto-detect: skip when patterns are empty (raw mode) — user intentionally disabled patterns
+    if (visConfig.autoDetect && !isRawMode && appCount === 0) return false;
+
+    if (visConfig.minCount > 0) {
+      const count = (visConfig.autoDetect && !isRawMode) ? appCount : totalCount;
+      if (count < visConfig.minCount) return false;
+    }
+
+    return true;
   }
 
   handleNavigation();
