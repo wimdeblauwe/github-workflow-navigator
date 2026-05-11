@@ -2,6 +2,9 @@
 
 This Chrome extension adds a panel to the GitHub Actions page that allows you to navigate to the workflow definition.
 
+> [!TIP]
+> You can install the extension from the [Chrome Web Store](https://chromewebstore.google.com/detail/github-workflow-navigator/fgjjlimpehmkbeeeiohhndjhjccndkpb).
+
 > [!NOTE]  
 > This browser extension is not affiliated with GitHub.
 
