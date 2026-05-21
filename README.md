@@ -15,6 +15,7 @@ This Chrome extension adds a panel to the GitHub Actions page that allows you to
 * Optional configurable badges for labeling workflows
 * Authentication via PAT token or GitHub OAuth App with Device Flow
 * Configurable panel visibility: auto-detect from pattern match, minimum workflow count threshold, and per-repository allow/block list
+* Draggable panel positioning, persisted via local storage. Double-click to reset position.
 
 
 ## Screenshots
