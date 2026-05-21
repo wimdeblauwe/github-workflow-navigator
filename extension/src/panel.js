@@ -44,6 +44,7 @@ function createPanel({ onRefresh, onOpenSettings }) {
     root.classList.toggle('wn-collapsed', collapsed);
     collapseBtn.innerHTML = collapsed ? OCTICONS['chevron-down'] : OCTICONS['chevron-up'];
     collapseBtn.title = collapsed ? 'Restore' : 'Minimize';
+    if (root.classList.contains('wn-positioned')) reclampAndPersist();
   }
   chrome.storage.local.get(['panelCollapsed'], (r) => {
     if (r.panelCollapsed) applyCollapsed(true);
@@ -52,6 +53,95 @@ function createPanel({ onRefresh, onOpenSettings }) {
     const collapsed = !root.classList.contains('wn-collapsed');
     applyCollapsed(collapsed);
     chrome.storage.local.set({ panelCollapsed: collapsed });
+  });
+
+  const header = root.querySelector('.wn-header');
+  const EDGE_MARGIN = 8;
+
+  function clampToViewport(top, left) {
+    const w = root.offsetWidth;
+    const headerH = header.offsetHeight || 36;
+    const maxLeft = Math.max(EDGE_MARGIN, window.innerWidth  - w - EDGE_MARGIN);
+    const maxTop  = Math.max(EDGE_MARGIN, window.innerHeight - headerH - EDGE_MARGIN);
+    return {
+      top:  Math.min(Math.max(top,  EDGE_MARGIN), maxTop),
+      left: Math.min(Math.max(left, EDGE_MARGIN), maxLeft),
+    };
+  }
+
+  function applyPosition(top, left) {
+    root.style.top  = `${top}px`;
+    root.style.left = `${left}px`;
+    root.classList.add('wn-positioned');
+  }
+
+  function reclampAndPersist() {
+    if (!root.classList.contains('wn-positioned')) return;
+    const top  = parseFloat(root.style.top)  || 0;
+    const left = parseFloat(root.style.left) || 0;
+    const clamped = clampToViewport(top, left);
+    if (clamped.top !== top || clamped.left !== left) {
+      applyPosition(clamped.top, clamped.left);
+      chrome.storage.local.set({ panelPosition: clamped });
+    }
+  }
+
+  function applyStoredPosition() {
+    chrome.storage.local.get(['panelPosition'], (r) => {
+      if (!r.panelPosition) return;
+      const { top, left } = clampToViewport(r.panelPosition.top, r.panelPosition.left);
+      applyPosition(top, left);
+      if (top !== r.panelPosition.top || left !== r.panelPosition.left) {
+        chrome.storage.local.set({ panelPosition: { top, left } });
+      }
+    });
+  }
+
+  let dragState = null;
+  header.addEventListener('pointerdown', (e) => {
+    if (e.target.closest('.wn-icon-btn')) return;
+    if (e.button !== 0) return;
+    const rect = root.getBoundingClientRect();
+    dragState = {
+      pointerId: e.pointerId,
+      offsetX: e.clientX - rect.left,
+      offsetY: e.clientY - rect.top,
+    };
+    header.setPointerCapture(e.pointerId);
+    e.preventDefault();
+  });
+  header.addEventListener('pointermove', (e) => {
+    if (!dragState || e.pointerId !== dragState.pointerId) return;
+    const { top, left } = clampToViewport(e.clientY - dragState.offsetY, e.clientX - dragState.offsetX);
+    applyPosition(top, left);
+  });
+  function endDrag(e) {
+    if (!dragState || e.pointerId !== dragState.pointerId) return;
+    header.releasePointerCapture(dragState.pointerId);
+    dragState = null;
+    const top  = parseFloat(root.style.top)  || 0;
+    const left = parseFloat(root.style.left) || 0;
+    chrome.storage.local.set({ panelPosition: { top, left } });
+  }
+  header.addEventListener('pointerup', endDrag);
+  header.addEventListener('pointercancel', endDrag);
+
+  header.addEventListener('dblclick', (e) => {
+    if (e.target.closest('.wn-icon-btn')) return;
+    root.classList.remove('wn-positioned');
+    root.style.top = '';
+    root.style.left = '';
+    chrome.storage.local.remove('panelPosition');
+  });
+
+  let resizeScheduled = false;
+  window.addEventListener('resize', () => {
+    if (resizeScheduled) return;
+    resizeScheduled = true;
+    requestAnimationFrame(() => {
+      resizeScheduled = false;
+      reclampAndPersist();
+    });
   });
   searchInput.addEventListener('input', () => {
     query = searchInput.value.trim().toLowerCase();
@@ -134,7 +224,7 @@ function createPanel({ onRefresh, onOpenSettings }) {
     }
   }
 
-  return { root, showLoading, showError, renderTree };
+  return { root, showLoading, showError, renderTree, applyStoredPosition };
 }
 
 function itemMatches(item, query) {

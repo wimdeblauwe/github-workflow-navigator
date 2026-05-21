@@ -20,6 +20,7 @@
       onOpenSettings: () => chrome.runtime.sendMessage({ type: 'open-options' }),
     });
     document.body.appendChild(currentPanel.root);
+    currentPanel.applyStoredPosition();
     loadInto(currentPanel, repoInfo.owner, repoInfo.repo);
   }
 
@@ -59,7 +60,10 @@
         return;
       }
 
-      if (!document.body.contains(panel.root)) document.body.appendChild(panel.root);
+      if (!document.body.contains(panel.root)) {
+        document.body.appendChild(panel.root);
+        panel.applyStoredPosition();
+      }
 
       panel.renderTree({
         owner, repo,
