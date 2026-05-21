@@ -19,3 +19,4 @@ The tool relies on the convention; when something doesn't match, it usually indi
 
 - Free linter for the workflow generator.
 - Counts in the section header help track whether the situation is improving over time.
+- The "Unrecognized" section (along with "Helpers") is collapsible and collapsed by default so it stays out of the way during normal navigation. The chevron toggle matches the one used by folders in the main tree. When a search query is active, the section auto-expands so matches are visible.

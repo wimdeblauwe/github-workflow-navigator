@@ -30,16 +30,11 @@ function createPanel({ onRefresh, onOpenSettings }) {
       <input type="search" placeholder="Search workflows…" autocomplete="off" spellcheck="false" />
     </div>
     <div class="wn-body"></div>
-    <div class="wn-footer">
-      <label><input type="checkbox" data-act="show-helpers" /> Show helpers</label>
-    </div>
   `;
   const body = root.querySelector('.wn-body');
-  const helperToggle = root.querySelector('[data-act="show-helpers"]');
   const searchInput = root.querySelector('.wn-search input');
 
   let lastData = null;
-  let showHelpers = false;
   let query = '';
 
   root.querySelector('[data-act="refresh"]').addEventListener('click', () => onRefresh && onRefresh());
@@ -49,10 +44,6 @@ function createPanel({ onRefresh, onOpenSettings }) {
     const collapsed = root.classList.toggle('wn-collapsed');
     collapseBtn.innerHTML = collapsed ? OCTICONS['chevron-down'] : OCTICONS['chevron-up'];
     collapseBtn.title = collapsed ? 'Restore' : 'Minimize';
-  });
-  helperToggle.addEventListener('change', () => {
-    showHelpers = helperToggle.checked;
-    if (lastData) renderTree(lastData);
   });
   searchInput.addEventListener('input', () => {
     query = searchInput.value.trim().toLowerCase();
@@ -101,13 +92,13 @@ function createPanel({ onRefresh, onOpenSettings }) {
     if (raw.length > 0) {
       const visibleRaw = query ? raw.filter((w) => itemMatches(w, query)) : raw;
       const helpers = query ? data.helpers.filter((w) => itemMatches(w, query)) : data.helpers;
-      const showHelpersSection = showHelpers && helpers.length > 0;
+      const showHelpersSection = helpers.length > 0;
       if (visibleRaw.length === 0 && !showHelpersSection) {
         showEmpty(query ? `No workflows match “${query}”.` : 'No workflows found.');
         return;
       }
       if (visibleRaw.length > 0) body.appendChild(renderFlatSection(null, visibleRaw, owner, repo));
-      if (showHelpersSection) body.appendChild(renderFlatSection(`Helpers (${helpers.length})`, helpers, owner, repo));
+      if (showHelpersSection) body.appendChild(renderFlatSection(`Helpers (${helpers.length})`, helpers, owner, repo, { collapsible: true, defaultOpen: !!query }));
       return;
     }
 
@@ -115,7 +106,7 @@ function createPanel({ onRefresh, onOpenSettings }) {
     const helpers = query ? data.helpers.filter((w) => itemMatches(w, query)) : data.helpers;
     const unrecognized = query ? data.unrecognized.filter((w) => itemMatches(w, query)) : data.unrecognized;
 
-    const showHelpersSection = showHelpers && helpers.length > 0;
+    const showHelpersSection = helpers.length > 0;
     const showUnrecSection = unrecognized.length > 0;
 
     if (apps.length === 0 && !showHelpersSection && !showUnrecSection) {
@@ -128,10 +119,10 @@ function createPanel({ onRefresh, onOpenSettings }) {
       body.appendChild(renderNode(tree, owner, repo, !!query));
     }
     if (showHelpersSection) {
-      body.appendChild(renderFlatSection(`Helpers (${helpers.length})`, helpers, owner, repo));
+      body.appendChild(renderFlatSection(`Helpers (${helpers.length})`, helpers, owner, repo, { collapsible: true, defaultOpen: !!query }));
     }
     if (showUnrecSection) {
-      body.appendChild(renderFlatSection(`Unrecognized (${unrecognized.length})`, unrecognized, owner, repo));
+      body.appendChild(renderFlatSection(`Unrecognized (${unrecognized.length})`, unrecognized, owner, repo, { collapsible: true, defaultOpen: !!query }));
     }
   }
 
@@ -217,15 +208,8 @@ function renderLeaf(leaf, owner, repo) {
   return li;
 }
 
-function renderFlatSection(title, items, owner, repo) {
+function renderFlatSection(title, items, owner, repo, { collapsible = false, defaultOpen = true } = {}) {
   const wrap = document.createElement('div');
-  if (title) {
-    wrap.className = 'wn-section';
-    const h = document.createElement('div');
-    h.className = 'wn-section-title';
-    h.textContent = title;
-    wrap.appendChild(h);
-  }
 
   const ul = document.createElement('ul');
   ul.className = 'wn-tree';
@@ -240,6 +224,40 @@ function renderFlatSection(title, items, owner, repo) {
     li.appendChild(a);
     ul.appendChild(li);
   }
+
+  if (title) {
+    wrap.className = 'wn-section';
+    const h = document.createElement('div');
+    h.className = 'wn-section-title';
+
+    if (collapsible) {
+      h.classList.add('wn-collapsible');
+      const toggle = document.createElement('span');
+      toggle.className = 'wn-toggle';
+      toggle.innerHTML = defaultOpen ? OCTICONS['chevron-down'] : OCTICONS['chevron-right'];
+      const label = document.createElement('span');
+      label.textContent = title;
+      h.append(toggle, label);
+
+      const childWrap = document.createElement('div');
+      childWrap.className = 'wn-children';
+      childWrap.style.display = defaultOpen ? 'block' : 'none';
+      childWrap.appendChild(ul);
+
+      h.addEventListener('click', () => {
+        const open = childWrap.style.display !== 'none';
+        childWrap.style.display = open ? 'none' : 'block';
+        toggle.innerHTML = open ? OCTICONS['chevron-right'] : OCTICONS['chevron-down'];
+      });
+
+      wrap.append(h, childWrap);
+      return wrap;
+    }
+
+    h.textContent = title;
+    wrap.appendChild(h);
+  }
+
   wrap.appendChild(ul);
   return wrap;
 }

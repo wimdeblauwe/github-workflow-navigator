@@ -4,7 +4,7 @@ Workflows in our monorepos are auto-generated and follow a strict convention. Th
 
 ## Helper workflows
 
-Any file starting with `_` (e.g., `_shared-build.yml`) is a helper used by other workflows. Not user-facing — hidden by default in the tool, with a "show helpers" toggle.
+Any file starting with `_` (e.g., `_shared-build.yml`) is a helper used by other workflows. Not user-facing — shown in a "Helpers" section that is collapsed by default.
 
 ## Application workflows
 
