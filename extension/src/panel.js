@@ -40,10 +40,18 @@ function createPanel({ onRefresh, onOpenSettings }) {
   root.querySelector('[data-act="refresh"]').addEventListener('click', () => onRefresh && onRefresh());
   root.querySelector('[data-act="settings"]').addEventListener('click', () => onOpenSettings && onOpenSettings());
   const collapseBtn = root.querySelector('[data-act="collapse"]');
-  collapseBtn.addEventListener('click', () => {
-    const collapsed = root.classList.toggle('wn-collapsed');
+  function applyCollapsed(collapsed) {
+    root.classList.toggle('wn-collapsed', collapsed);
     collapseBtn.innerHTML = collapsed ? OCTICONS['chevron-down'] : OCTICONS['chevron-up'];
     collapseBtn.title = collapsed ? 'Restore' : 'Minimize';
+  }
+  chrome.storage.local.get(['panelCollapsed'], (r) => {
+    if (r.panelCollapsed) applyCollapsed(true);
+  });
+  collapseBtn.addEventListener('click', () => {
+    const collapsed = !root.classList.contains('wn-collapsed');
+    applyCollapsed(collapsed);
+    chrome.storage.local.set({ panelCollapsed: collapsed });
   });
   searchInput.addEventListener('input', () => {
     query = searchInput.value.trim().toLowerCase();
