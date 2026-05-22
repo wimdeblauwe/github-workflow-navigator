@@ -3,6 +3,12 @@
   "name": "GitHub Workflow Navigator",
   "version": "0.5.0",
   "description": "Hierarchical, searchable view of GitHub Actions workflows for monorepos.",
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
   "permissions": [
     "storage"
   ],
@@ -33,7 +39,13 @@
     "service_worker": "src/background.js"
   },
   "action": {
-    "default_title": "GitHub Workflow Navigator settings"
+    "default_title": "GitHub Workflow Navigator settings",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png",
+      "48": "icons/icon-48.png",
+      "128": "icons/icon-128.png"
+    }
   },
   "options_page": "src/options.html"
 }
