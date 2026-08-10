@@ -260,6 +260,7 @@ function renderFolder(name, node, owner, repo, expandAll) {
   const label = document.createElement('span');
   label.className = 'wn-name';
   label.textContent = name;
+  label.title = name;
 
   const count = document.createElement('span');
   count.className = 'wn-count';
@@ -299,6 +300,7 @@ function renderLeaf(leaf, owner, repo) {
     const name = document.createElement('span');
     name.className = 'wn-leaf-name';
     name.textContent = leaf.githubName;
+    name.title = leaf.githubName;
     a.appendChild(name);
   }
 
@@ -319,6 +321,7 @@ function renderFlatSection(title, items, owner, repo, { collapsible = false, def
     a.href = workflowUrl(owner, repo, item.filename);
     a.className = 'wn-row wn-row-leaf wn-row-flat';
     a.textContent = item.filename;
+    a.title = item.filename;
     li.appendChild(a);
     ul.appendChild(li);
   }
